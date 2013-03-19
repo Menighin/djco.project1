@@ -20,7 +20,8 @@ namespace Game_Test_2 {
 
         enum State {
             Walking,
-            Jumping
+            Jumping,
+            Falling
         }
 
         State mCurrentState = State.Walking;
@@ -38,9 +39,9 @@ namespace Game_Test_2 {
         public void Update(GameTime theGameTime) {
             KeyboardState aCurrentKeyboardState = Keyboard.GetState();
 
+            UpdateFall(aCurrentKeyboardState);
             UpdateMovement(aCurrentKeyboardState);
             UpdateJump(aCurrentKeyboardState);
-            GravityActs();
 
             mPreviousKeyboardState = aCurrentKeyboardState;
 
@@ -52,11 +53,11 @@ namespace Game_Test_2 {
                 mSpeed = Vector2.Zero;
                 mDirection = Vector2.Zero;
 
-                if (aCurrentKeyboardState.IsKeyDown(Keys.Left) == true) {
+                if (aCurrentKeyboardState.IsKeyDown(Keys.Left) == true && this.Position.X > 0) {
                     mSpeed.X = NEGRITUDE_SPEED;
                     mDirection.X = MOVE_LEFT;
                 }
-                else if (aCurrentKeyboardState.IsKeyDown(Keys.Right) == true) {
+                else if (aCurrentKeyboardState.IsKeyDown(Keys.Right) == true && this.Position.X < GlobalEnvironment.ScreenWidth - Size.Width) {
                     mSpeed.X = NEGRITUDE_SPEED;
                     mDirection.X = MOVE_RIGHT;
                 }
@@ -72,11 +73,11 @@ namespace Game_Test_2 {
 
                 mSpeed.Y -= GRAVITY;
 
-                if (aCurrentKeyboardState.IsKeyDown(Keys.Left) == true) {
+                if (aCurrentKeyboardState.IsKeyDown(Keys.Left) == true && this.Position.X > 0) {
                     mSpeed.X = NEGRITUDE_SPEED;
                     mDirection.X = MOVE_LEFT;
                 }
-                else if (aCurrentKeyboardState.IsKeyDown(Keys.Right) == true) {
+                else if (aCurrentKeyboardState.IsKeyDown(Keys.Right) == true && this.Position.X < GlobalEnvironment.ScreenWidth - Size.Width) {
                     mSpeed.X = NEGRITUDE_SPEED;
                     mDirection.X = MOVE_RIGHT;
                 }
@@ -99,10 +100,42 @@ namespace Game_Test_2 {
         }
 
 
-        private void GravityActs() {
-            if (mCurrentState == State.Walking) {
-
+        private void UpdateFall(KeyboardState aCurrentKeyboardState) {
+            if (mCurrentState == State.Walking && !CollisionGround()) {
+                Fall();
             }
+
+            if (mCurrentState == State.Falling) {
+                mSpeed.Y += GRAVITY;
+
+                if (aCurrentKeyboardState.IsKeyDown(Keys.Left) == true && this.Position.X > 0) {
+                    mSpeed.X = NEGRITUDE_SPEED;
+                    mDirection.X = MOVE_LEFT;
+                }
+                else if (aCurrentKeyboardState.IsKeyDown(Keys.Right) == true && this.Position.X < GlobalEnvironment.ScreenWidth - Size.Width) {
+                    mSpeed.X = NEGRITUDE_SPEED;
+                    mDirection.X = MOVE_RIGHT;
+                }
+
+                if (CollisionGround())
+                    mCurrentState = State.Walking;
+            }
+        }
+
+        private void Fall() {
+            if (mCurrentState != State.Falling) {
+                mCurrentState = State.Falling;
+                mDirection.Y = MOVE_DOWN;
+                mSpeed = new Vector2(NEGRITUDE_SPEED, NEGRITUDE_SPEED);
+            }
+        }
+
+        private bool CollisionGround() {
+            if (this.Position.Y + Size.Height < GlobalEnvironment.ScreenHeight) 
+                return false;
+
+            this.Position.Y = GlobalEnvironment.ScreenHeight - Size.Height;
+            return true;
         }
 
     }

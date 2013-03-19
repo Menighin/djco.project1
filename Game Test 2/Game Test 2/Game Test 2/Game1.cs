@@ -24,6 +24,8 @@ namespace Game_Test_2 {
         }
 
         protected override void Initialize() {
+            GlobalEnvironment.ScreenHeight = graphics.PreferredBackBufferHeight;
+            GlobalEnvironment.ScreenWidth = graphics.PreferredBackBufferWidth;
             negritude = new Negritude();
             base.Initialize();
         }
