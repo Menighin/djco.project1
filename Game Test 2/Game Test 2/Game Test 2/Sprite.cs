@@ -12,7 +12,7 @@ namespace Game_Test_2 {
         private float mScale = 1.0f;
 
         public Vector2 Position = new Vector2(0, 0);    //The current position of the Sprite
-        private Texture2D mSpriteTexture;               //The texture object used when drawing the sprite
+        public Texture2D mSpriteTexture;               //The texture object used when drawing the sprite
 
 
         //Load the texture for the sprite using the Content Pipeline
@@ -24,7 +24,7 @@ namespace Game_Test_2 {
         }
 
         //Draw the sprite to the screen
-        public void Draw(SpriteBatch theSpriteBatch) {
+        public virtual void Draw(SpriteBatch theSpriteBatch) {
             theSpriteBatch.Draw(mSpriteTexture, Position, new Rectangle(0, 0, mSpriteTexture.Width, mSpriteTexture.Height), Color.White, 0.0f, Vector2.Zero, Scale, SpriteEffects.None, 0);
         }
 

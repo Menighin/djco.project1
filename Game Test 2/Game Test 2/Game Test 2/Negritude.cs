@@ -10,7 +10,7 @@ namespace Game_Test_2 {
     class Negritude : Sprite {
 
         //Constantes
-        const string NEGRITUDE_ASSETNAME = "negritude";
+        const string NEGRITUDE_ASSETNAME = "characters";
         const int START_POSITION_X = 0;
         const int START_POSITION_Y = 0;
         const int NEGRITUDE_SPEED = 160;
@@ -18,6 +18,7 @@ namespace Game_Test_2 {
         const int MOVE_DOWN = 1;
         const int MOVE_LEFT = -1;
         const int MOVE_RIGHT = 1;
+        const int ENLARGE = GlobalEnvironment.ENLARGE;
         const float GRAVITY = 9.8f;
 
         //Estados representando ações do herói
@@ -34,12 +35,20 @@ namespace Game_Test_2 {
         Vector2 mSpeed = Vector2.Zero;
         Vector2 mStartingPosition = Vector2.Zero;
 
+        //Animação
+        Point frameSize = new Point(6, 16);
+        Point currentFrame = new Point(2, 2);
+        Point sheetSize = new Point(2, 2);
+
         KeyboardState mPreviousKeyboardState;
 
         //Carrega sprite
         public void LoadContent(ContentManager theContentManager) {
-            Position = new Vector2(GlobalEnvironment.ScreenWidth / 2, START_POSITION_Y);
-            base.LoadContent(theContentManager, NEGRITUDE_ASSETNAME);
+            Position = new Vector2(GlobalEnvironment.ScreenWidth / 2 + 70, START_POSITION_Y);
+            base.mSpriteTexture = theContentManager.Load<Texture2D>(NEGRITUDE_ASSETNAME);
+            base.AssetName = NEGRITUDE_ASSETNAME;
+            base.Size = new Rectangle(0, 0, frameSize.X * ENLARGE, frameSize.Y * ENLARGE);
+            base.Rect = new Rectangle((int) Position.X, (int) Position.Y, frameSize.X * ENLARGE, frameSize.Y * ENLARGE);
         }
 
         //Update das posições dos objetos
@@ -186,24 +195,16 @@ namespace Game_Test_2 {
                         this.Position.Y = p.Rect.Y - this.Rect.Height + 1;
                         return State.Walking;
                     }
-                    /*else if (this.Rect.Top > p.Rect.Top)
-                        this.Position.Y = p.Rect.Y + p.Rect.Height;
-                    else if (this.Rect.Right > p.Rect.Right && this.Rect.Left < p.Rect.Right) {
-                        this.Position.X = p.Rect.Right + 1;
-                        this.mSpeed.X = 0;
-                        return State.Falling;
-                    }
-                    else if (this.Rect.Left < p.Rect.Left && this.Rect.Right > p.Rect.Left) {
-                        this.Position.X = p.Rect.Left - 1 - this.Rect.Width;
-                        this.mSpeed.X = 0;
-                        return State.Falling;
-                    }*/
-
-                    //return State.Walking;
                 }
             }
 
             return State.Null;
+        }
+
+        public override void  Draw(SpriteBatch theSpriteBatch){
+            theSpriteBatch.Draw(base.mSpriteTexture, Position,
+                    new Rectangle(12, 8, 6, 16),
+                    Color.White, 0, Vector2.Zero, ENLARGE, SpriteEffects.None, 0);
         }
 
     }

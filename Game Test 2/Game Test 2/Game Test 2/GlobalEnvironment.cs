@@ -5,6 +5,7 @@ namespace Game_Test_2 {
 
         private static float screenWidth;
         private static float screenHeight;
+        public const int ENLARGE = 3;
         private static List<Platform> platform = new List<Platform>();
 
         public static float ScreenWidth {

@@ -17,7 +17,6 @@ namespace Game_Test_2 {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Negritude negritude;
-        Platform p1;
 
         //Construtor
         public Game1() {
@@ -31,8 +30,8 @@ namespace Game_Test_2 {
             GlobalEnvironment.ScreenWidth = graphics.PreferredBackBufferWidth;
             negritude = new Negritude();
 
-            GlobalEnvironment.addPlatform(new Platform((int)GlobalEnvironment.ScreenWidth / 2 - 400, (int)GlobalEnvironment.ScreenHeight - 160));
-            GlobalEnvironment.addPlatform(new Platform ((int) GlobalEnvironment.ScreenWidth / 2, (int) GlobalEnvironment.ScreenHeight - 80));
+            GlobalEnvironment.addPlatform(new Platform((int)GlobalEnvironment.ScreenWidth / 2 - 300, (int)GlobalEnvironment.ScreenHeight - 160, 8));
+            GlobalEnvironment.addPlatform(new Platform ((int) GlobalEnvironment.ScreenWidth / 2, (int) GlobalEnvironment.ScreenHeight - 80, 5));
             
             
             base.Initialize();
@@ -68,7 +67,7 @@ namespace Game_Test_2 {
 
         //Desenha
         protected override void Draw(GameTime gameTime) {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Black);
 
             spriteBatch.Begin();
             negritude.Draw(this.spriteBatch);
