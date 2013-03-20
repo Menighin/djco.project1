@@ -8,6 +8,7 @@ namespace Game_Test_2 {
 
         public string AssetName;
         public Rectangle Size;
+        public Rectangle Rect;
         private float mScale = 1.0f;
 
         public Vector2 Position = new Vector2(0, 0);    //The current position of the Sprite
@@ -19,6 +20,7 @@ namespace Game_Test_2 {
             mSpriteTexture = theContentManager.Load<Texture2D>(theAssetName);
             AssetName = theAssetName;
             Size = new Rectangle(0, 0, (int)(mSpriteTexture.Width * Scale), (int)(mSpriteTexture.Height * Scale));
+            Rect = new Rectangle((int)Position.X, (int)Position.Y, mSpriteTexture.Width, mSpriteTexture.Height);
         }
 
         //Draw the sprite to the screen
@@ -29,6 +31,8 @@ namespace Game_Test_2 {
         //Updaet
         public void Update(GameTime theGameTime, Vector2 theSpeed, Vector2 theDirection) {
             Position += theDirection * theSpeed * (float)theGameTime.ElapsedGameTime.TotalSeconds;
+            Rect.X = (int) Position.X;
+            Rect.Y = (int) Position.Y;
         }
 
         public float Scale {
