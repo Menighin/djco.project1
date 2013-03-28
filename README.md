@@ -2,20 +2,21 @@ Manic FEUP
 ==========
 
 Projeto de DJCO 
----------------
+
 Descrição: Paródia do jogo Manic Miner com relação a FEUP.
+
 Desenvolvimento: C#, XNA 4.0
 
 TAREFAS
-=====
+-------
 - Organizar os recursos do projeto (edição de sprites para a versão final do game)
 - Fazer o level design do jogo - 1 cena (e o menu inicial também)
 - Programar muito!
 
 Notas
-=====
+-----
 
--Todas as coisas feitas até o momento são sujeitas à mudanças se necessárias.
+- Todas as coisas feitas até o momento são sujeitas à mudanças se necessárias.
 
 - Engine baseada no antigo exemplo de jogo de plataforma de versões anteriores do XNA.
 
