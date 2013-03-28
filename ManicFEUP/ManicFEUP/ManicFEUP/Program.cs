@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 
-namespace Game_Test_2 {
+namespace ManicFEUP
+{
 #if WINDOWS || XBOX
     static class Program
     {
@@ -9,7 +10,7 @@ namespace Game_Test_2 {
         /// </summary>
         static void Main(string[] args)
         {
-            using (Game1 game = new Game1())
+            using (GameCore game = new GameCore())
             {
                 game.Run();
             }
