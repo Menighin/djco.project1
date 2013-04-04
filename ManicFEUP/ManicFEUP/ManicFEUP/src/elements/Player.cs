@@ -29,10 +29,9 @@ namespace ManicFEUP
         private const float MaxFallSpeed = 500.0f;                  //550.0f;
         private const float JumpControlPower = 0.14f;               //0.14f
 
-        private Vector2 position;
+        private Vector2 Position;
         private Vector2 velocity;
         private Sprite sprite;
-        private Face face;
         private bool isAlive;
         private bool isOnGround;
         private float movement;
@@ -49,8 +48,8 @@ namespace ManicFEUP
         {
             get
             {
-                int left = (int)Math.Round(position.X - sprite.Origin.X) + localBounds.X;
-                int top = (int)Math.Round(position.Y - sprite.Origin.Y) + localBounds.Y;
+                int left = (int)Math.Round(Position.X - sprite.Origin.X) + localBounds.X;
+                int top = (int)Math.Round(Position.Y - sprite.Origin.Y) + localBounds.Y;
 
                 return new Rectangle(left, top, localBounds.Width, localBounds.Height);
             }
@@ -59,17 +58,15 @@ namespace ManicFEUP
         public Player(SceneLevel level, Vector2 pos) 
         {
             this.level = level;
-            this.position = pos;
+            this.Position = pos;
 
-            Reset(position);
+            Reset(Position);
             LoadContent();
-
-            localBounds = new Rectangle(10, 1, 12, 31); //Caixa de colisao
         }
 
         public void Reset(Vector2 position)
         {
-            this.position = position;
+            this.Position = position;
             this.velocity = Vector2.Zero;
             this.isAlive = true;
             this.isJumping = false;
@@ -79,6 +76,8 @@ namespace ManicFEUP
         {
             this.sprite = new Sprite(level.Content.Load<Texture2D>("sprPlayer"), 32, 32, 6, new Vector2(16,31));
             this.sprMask = new Sprite(level.Content.Load<Texture2D>("sprPlayerMask"), 32, 32, 1, new Vector2(16, 31));
+
+            localBounds = new Rectangle(10, 1, 12, 31); //Caixa de colisao
         }
 
         public void Update(GameTime gameTime, KeyboardState keyboardState)
@@ -91,7 +90,7 @@ namespace ManicFEUP
             else if (movement < 0)
                 sprite.SetAnimLoop(3, 5, 0.2f);
             else
-                sprite.SetAnimLoop(  (int)face, (int)face, 0.0f);
+                sprite.SetAnim(false);
 
             // Clear input.
             movement = 0.0f;
@@ -100,8 +99,8 @@ namespace ManicFEUP
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            sprite.Draw(gameTime, spriteBatch, position);
-            sprMask.Draw(gameTime, spriteBatch, position);
+            sprite.Draw(gameTime, spriteBatch, Position);
+            sprMask.Draw(gameTime, spriteBatch, Position);
         }
 
 
@@ -118,12 +117,10 @@ namespace ManicFEUP
             if ( keyboardState.IsKeyDown(Keys.Left) )
             {
                 movement = -1.0f;
-                face = Face.Left;
             }
             else if (keyboardState.IsKeyDown(Keys.Right) )
             {
                 movement = 1.0f;
-                face = Face.Right;
             }
 
             // Check if the player wants to jump.
@@ -134,7 +131,7 @@ namespace ManicFEUP
         {
             float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            Vector2 previousPosition = position;
+            Vector2 previousPosition = Position;
 
             // Base velocity is a combination of horizontal movement control and
             // acceleration downward due to gravity.
@@ -153,17 +150,17 @@ namespace ManicFEUP
             velocity.X = MathHelper.Clamp(velocity.X, -MaxMoveSpeed, MaxMoveSpeed);
 
             // Apply velocity.
-            position += velocity * elapsed;
-            position = new Vector2((float)Math.Round(position.X), (float)Math.Round(position.Y));
+            Position += velocity * elapsed;
+            Position = new Vector2((float)Math.Round(Position.X), (float)Math.Round(Position.Y));
 
             // If the player is now colliding with the level, separate them.
             HandleCollisions();
 
             // If the collision stopped us from moving, reset the velocity to zero.
-            if (position.X == previousPosition.X)
+            if (Position.X == previousPosition.X)
                 velocity.X = 0;
 
-            if (position.Y == previousPosition.Y)
+            if (Position.Y == previousPosition.Y)
                 velocity.Y = 0;
         }
 
@@ -248,7 +245,7 @@ namespace ManicFEUP
                                 if (collision == TileCollision.Impassable || isOnGround)
                                 {
                                     // Resolve the collision along the Y axis.
-                                    position = new Vector2(position.X, position.Y + depth.Y);
+                                    Position = new Vector2(Position.X, Position.Y + depth.Y);
                                     
                                     // Perform further collisions with the new bounds.
                                     bounds = Bounding;
@@ -257,7 +254,7 @@ namespace ManicFEUP
                             else if (collision == TileCollision.Impassable) // Ignore platforms.
                             {
                                 // Resolve the collision along the X axis.
-                                position = new Vector2(position.X + depth.X, position.Y);
+                                Position = new Vector2(Position.X + depth.X, Position.Y);
 
                                 // Perform further collisions with the new bounds.
                                 bounds = Bounding;

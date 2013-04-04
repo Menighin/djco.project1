@@ -61,6 +61,12 @@ namespace ManicFEUP
             this.frameIndex = this.firstFrame;
         }
 
+        public void SetAnim(bool anim)
+        {
+            frameIndex = firstFrame;
+            animate = anim;
+        }
+
         public void SetAnimLoop(int firstFrame, int lastFrame, float frameTime)
         {
             this.firstFrame = firstFrame;

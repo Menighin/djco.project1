@@ -46,19 +46,18 @@ namespace ManicFEUP
         public override void Update(GameTime gameTime, KeyboardState keyboardState)
         {
             player.Update(gameTime, keyboardState);
+            UpdateKeys(gameTime);
+            UpdateEnemies(gameTime);
         }
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             DrawTiles(spriteBatch);
-
             foreach (Key key in keys)
                 key.Draw(gameTime, spriteBatch);
-
             player.Draw(gameTime, spriteBatch);
-
-            //foreach (Enemy enemy in enemies)
-            //    enemy.Draw(gameTime, spriteBatch);
+            foreach (Enemy enemy in enemies)
+                enemy.Draw(gameTime, spriteBatch);
         }
 
         private void DrawTiles(SpriteBatch spriteBatch)
@@ -135,7 +134,7 @@ namespace ManicFEUP
                 case '1': return LoadStartTile(x, y); // Player 1 start point  
                 case 'X': return LoadExitTile(x, y);    // Door
                 case 'K': return LoadKeyTile(x, y); // Key
-                case 'E': return LoadEnemyTile(x, y, "MonsterA");   // Various enemies
+                case 'E': return LoadEnemyTile(x, y, "sprEnemy");   // Various enemies
                 // Unknown tile type character
                 default: throw new NotSupportedException(String.Format("Unsupported tile type character '{0}' at position {1}, {2}.", tileType, x, y));
             }
@@ -159,21 +158,47 @@ namespace ManicFEUP
             return new Tile(TileCollision.Passable);
         }
 
-        private Tile LoadEnemyTile(int x, int y, string spriteSet)
+        private Tile LoadEnemyTile(int x, int y, string assetName)
         {
-            //Vector2 position = RectangleExtensions.GetBottomCenter(GetBounds(x, y));
-            //enemies.Add(new Enemy(this, position, spriteSet));
+            Vector2 position = RectUtils.GetBottomCenter(GetBounds(x, y));
+            enemies.Add(new Enemy(this, position, assetName));
             return new Tile(TileCollision.Passable);
         }
-
 
         private Tile LoadKeyTile(int x, int y)
         {
-            //Point position = GetBounds(x, y).Center;
-            //keys.Add(new Key(this, new Vector2(position.X, position.Y)));
+            Point position = new Point(x * tileSet.Width, y*tileSet.Height);
+            keys.Add(new Key(this, new Vector2(position.X, position.Y)));
             return new Tile(TileCollision.Passable);
         }
         #endregion
+
+        private void UpdateKeys(GameTime gameTime)
+        {
+            for (int i = 0; i < keys.Count; ++i)
+            {
+                Key key = keys[i];
+                //key.Update(gameTime);
+                if (key.Bounding.Intersects(player.Bounding))
+                {
+                    keys.RemoveAt(i--);
+                    //OnGemCollected(gem, Player);
+                }
+            }
+        }
+
+        private void UpdateEnemies(GameTime gameTime)
+        {
+            foreach (Enemy enemy in enemies)
+            {
+                enemy.Update(gameTime);
+                // Touching an enemy instantly kills the player
+                //if (enemy.Bounding.Intersects(player.Bounding))
+                //{
+                //    OnPlayerKilled(enemy);
+                //}
+            }
+        }
 
         public Rectangle GetBounds(int x, int y)
         {
