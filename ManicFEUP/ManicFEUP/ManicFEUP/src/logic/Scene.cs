@@ -21,6 +21,7 @@ namespace ManicFEUP
             Content = new ContentManager(serviceProvider, "Content");
         }
 
+        public abstract void Load();
         public abstract void Update(GameTime gameTime, KeyboardState keyboardState);
         public abstract void Draw(GameTime gameTime, SpriteBatch spriteBatch);
 

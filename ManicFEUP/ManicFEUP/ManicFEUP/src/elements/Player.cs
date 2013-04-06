@@ -18,12 +18,12 @@ namespace ManicFEUP
     class Player 
     {
         // Constants for controling horizontal movement
-        private const float MoveAcceleration = 13000.0f;            // 13000.0f;
-        private const float MaxMoveSpeed = 1750.0f;                 //1750.0f;
+        private float MoveAcceleration = 11000.0f;            // 13000.0f;
+        private float MaxMoveSpeed = 1000.0f;                 //1750.0f;
         private const float GroundDragFactor = 0.48f;               //0.48f;
         private const float AirDragFactor = 0.52f;                  //0.58f;
         // Constants for controlling vertical movement
-        private const float MaxJumpTime = 0.35f;                    // 0.35f;
+        private float MaxJumpTime = 0.38f;                    // 0.35f;
         private const float JumpLaunchVelocity = -1400.0f;        //-3500.0f;
         private const float GravityAcceleration = 2000.0f;          //3400.0f;
         private const float MaxFallSpeed = 500.0f;                  //550.0f;
@@ -38,6 +38,7 @@ namespace ManicFEUP
         private bool isJumping;
         private bool wasJumping;
         private float jumpTime;
+        private bool canShoot;
 
         private SceneLevel level;
         private int previousBottom;
@@ -59,6 +60,7 @@ namespace ManicFEUP
         {
             this.level = level;
             this.Position = pos;
+            this.canShoot = false;
 
             Reset(Position);
             LoadContent();
@@ -103,10 +105,6 @@ namespace ManicFEUP
             sprMask.Draw(gameTime, spriteBatch, Position);
         }
 
-
-
-
-
         private void GetInput(KeyboardState keyboardState)
         {
             // Ignore small movements to prevent running in place.
@@ -125,6 +123,13 @@ namespace ManicFEUP
 
             // Check if the player wants to jump.
             isJumping = keyboardState.IsKeyDown(Keys.Space);
+
+            if (canShoot && keyboardState.IsKeyDown(Keys.X)) {
+                //ATIRA MOTHAFOCKA
+
+            }
+
+
         }
 
         public void ApplyPhysics(GameTime gameTime)
@@ -268,6 +273,28 @@ namespace ManicFEUP
             previousBottom = bounds.Bottom;
         }
 
+        public float Speed {
+            get { return MaxMoveSpeed; }
+            set { MaxMoveSpeed = value; }
+        }
 
+        public float Acceleration {
+            get { return MoveAcceleration; }
+            set { MoveAcceleration = value; }
+        }
+
+        public float Jump {
+            get { return MaxJumpTime; }
+            set { MaxJumpTime = value; }
+        }
+
+        public bool onGround {
+            get { return isOnGround; }
+        }
+
+        public bool Weapon {
+            get { return canShoot; }
+            set { canShoot = value; }
+        }
     }
 }

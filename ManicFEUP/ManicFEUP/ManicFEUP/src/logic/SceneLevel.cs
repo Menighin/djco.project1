@@ -12,9 +12,15 @@ namespace ManicFEUP
     class SceneLevel : Scene
     {
         private Player player;
+        private KeyboardState previousKey;
         private List<Key> keys = new List<Key>();
+        private List<Shot> shots = new List<Shot>();
         protected List<Enemy> enemies = new List<Enemy>();
         protected Door door;
+        protected SpeedBoots speedBoots;
+        protected JumpBoots jumpBoots;
+        protected Weapon weapon;
+        protected Text noJumps;
 
         public TileSet tileSet;
         protected Tile[,] tiles;
@@ -25,6 +31,9 @@ namespace ManicFEUP
         protected int energy;
         protected int highScore;
         protected int score;
+        protected int jumpsLeft = 0;
+        protected bool countJump = true;
+        protected bool speedBootsOn = false;
 
         public int Width
         {
@@ -39,8 +48,13 @@ namespace ManicFEUP
         public SceneLevel(GameServiceContainer Services, Stream fileStream) : base(Services)
         {
             LoadTiles("tileset", fileStream);  // Load TileSet and Tiles
+            noJumps = new Text("manicFont", 50, 400);
             //Load backgrounds
             //Load sounds
+        }
+
+        public override void Load() {
+            noJumps.Load(Content);
         }
 
         public override void Update(GameTime gameTime, KeyboardState keyboardState)
@@ -48,6 +62,11 @@ namespace ManicFEUP
             player.Update(gameTime, keyboardState);
             UpdateKeys(gameTime);
             UpdateEnemies(gameTime);
+            if(speedBoots.Update(gameTime, player)) 
+                speedBootsOn = true;
+            UpdateJumps(gameTime, keyboardState);
+            weapon.Update(gameTime, player);
+            previousKey = keyboardState;
         }
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
@@ -58,6 +77,12 @@ namespace ManicFEUP
             player.Draw(gameTime, spriteBatch);
             foreach (Enemy enemy in enemies)
                 enemy.Draw(gameTime, spriteBatch);
+            speedBoots.Draw(gameTime, spriteBatch);
+            jumpBoots.Draw(gameTime, spriteBatch);
+            weapon.Draw(gameTime, spriteBatch);
+
+            DrawHUD(gameTime, spriteBatch);
+            
         }
 
         private void DrawTiles(SpriteBatch spriteBatch)
@@ -76,6 +101,14 @@ namespace ManicFEUP
                         
                 }
             }
+        }
+
+        private void DrawHUD(GameTime gameTime, SpriteBatch spriteBatch) {
+            noJumps.Draw(spriteBatch, "x " + ((jumpsLeft - 1 >= 0) ? jumpsLeft - 1 : 0), Color.White);
+            jumpBoots.DrawHUDCopy(gameTime, spriteBatch, 10, 400);
+            
+            if(speedBootsOn) speedBoots.DrawHUDCopy(gameTime, spriteBatch, 10, 420);
+            if (player.Weapon) weapon.DrawHUDCopy(gameTime, spriteBatch, 10, 440);
         }
 
         #region LoadingScene
@@ -134,7 +167,10 @@ namespace ManicFEUP
                 case '1': return LoadStartTile(x, y); // Player 1 start point  
                 case 'X': return LoadExitTile(x, y);    // Door
                 case 'K': return LoadKeyTile(x, y); // Key
+                case 'B': return LoadSpeedBootsTile(x, y); //Speed Boots
+                case 'J': return LoadJumpBootsTile(x, y); //Jump Boots
                 case 'E': return LoadEnemyTile(x, y, "sprEnemy");   // Various enemies
+                case 'W': return LoadWeaponTile(x, y);  //Weapon
                 // Unknown tile type character
                 default: throw new NotSupportedException(String.Format("Unsupported tile type character '{0}' at position {1}, {2}.", tileType, x, y));
             }
@@ -171,6 +207,26 @@ namespace ManicFEUP
             keys.Add(new Key(this, new Vector2(position.X, position.Y)));
             return new Tile(TileCollision.Passable);
         }
+
+        private Tile LoadSpeedBootsTile(int x, int y) {
+            Point position = new Point(x * tileSet.Width, y * tileSet.Height);
+            speedBoots = new SpeedBoots(this, new Vector2(position.X, position.Y));
+            return new Tile(TileCollision.Passable);
+        }
+
+        private Tile LoadJumpBootsTile(int x, int y) {
+            Vector2 position = new Vector2(x * tileSet.Width, y * tileSet.Height);
+            jumpBoots = new JumpBoots(this, position);
+            return new Tile(TileCollision.Passable);
+        }
+
+        private Tile LoadWeaponTile(int x, int y) {
+            Vector2 position = new Vector2(x * tileSet.Width, y * tileSet.Height);
+            weapon = new Weapon(this, position);
+            return new Tile(TileCollision.Passable);
+        }
+
+
         #endregion
 
         private void UpdateKeys(GameTime gameTime)
@@ -198,6 +254,19 @@ namespace ManicFEUP
                 //    OnPlayerKilled(enemy);
                 //}
             }
+        }
+
+        private void UpdateJumps(GameTime gameTime, KeyboardState keyboardState) {
+            if (jumpBoots.Update(gameTime, player))
+                jumpsLeft = 6;
+
+            if (jumpsLeft > 0 && keyboardState != previousKey && countJump && keyboardState.IsKeyDown(Keys.Space)) {
+                countJump = false;
+                jumpsLeft--;
+                if (jumpsLeft == 0)
+                    jumpBoots.reset(player);
+            }
+            if (player.onGround) countJump = true;
         }
 
         public Rectangle GetBounds(int x, int y)

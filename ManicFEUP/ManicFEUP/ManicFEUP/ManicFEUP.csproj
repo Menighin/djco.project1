@@ -73,6 +73,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="src\elements\Enemy.cs" />
+    <Compile Include="src\utils\Text.cs" />
     <Compile Include="src\elements\Objects.cs" />
     <Compile Include="src\utils\RectUtils.cs" />
     <Compile Include="src\logic\Scene.cs" />

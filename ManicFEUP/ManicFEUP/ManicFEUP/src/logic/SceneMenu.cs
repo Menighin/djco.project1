@@ -16,6 +16,10 @@ namespace ManicFEUP
 
         }
 
+        public override void Load() {
+
+        }
+
         public override void Update(GameTime gameTime, KeyboardState keyboardState)
         {
             

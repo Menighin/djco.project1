@@ -48,13 +48,13 @@ namespace ManicFEUP
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            // Load Fonts
             // Load Textures
             // Load Sounds
 
             // Load the level.
             using (Stream fileStream = TitleContainer.OpenStream("Content/Level1.txt"))
                 level = new SceneLevel(Services, fileStream);
+            level.Load();
         }
 
         /// <summary>
@@ -76,12 +76,12 @@ namespace ManicFEUP
         /// <summary>
         /// </summary>
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
-        protected override void Draw(GameTime gameTime)
-        {
+        protected override void Draw(GameTime gameTime) {
             GraphicsDevice.Clear(Color.Black);  // Clear background to black
             spriteBatch.Begin();
             level.Draw(gameTime, spriteBatch);  // Draw Level
             spriteBatch.End();
+
             base.Draw(gameTime);
         }
 
