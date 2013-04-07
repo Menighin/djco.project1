@@ -13,14 +13,18 @@ namespace ManicFEUP
     {
         private Player player;
         private KeyboardState previousKey;
-        private List<Key> keys = new List<Key>();
-        private List<Shot> shots = new List<Shot>();
+        protected List<Key> keys = new List<Key>();
+        protected List<Shot> shots = new List<Shot>();
         protected List<Enemy> enemies = new List<Enemy>();
+        protected List<PlatformFalling> platformsFalling = new List<PlatformFalling>();
         protected Door door;
         protected SpeedBoots speedBoots;
         protected JumpBoots jumpBoots;
         protected Weapon weapon;
-        protected Text noJumps;
+        
+        // Textos
+        protected Text noJumps = new Text("manicFont", 50, 400);
+        protected Text xToShoot = new Text("manicFont", 50, 440);
 
         public TileSet tileSet;
         protected Tile[,] tiles;
@@ -48,18 +52,20 @@ namespace ManicFEUP
         public SceneLevel(GameServiceContainer Services, Stream fileStream) : base(Services)
         {
             LoadTiles("tileset", fileStream);  // Load TileSet and Tiles
-            noJumps = new Text("manicFont", 50, 400);
+
             //Load backgrounds
             //Load sounds
         }
 
         public override void Load() {
+            // Loading Fonts
             noJumps.Load(Content);
+            xToShoot.Load(Content);
         }
 
         public override void Update(GameTime gameTime, KeyboardState keyboardState)
         {
-            player.Update(gameTime, keyboardState);
+            player.Update(gameTime, keyboardState, shots);
             UpdateKeys(gameTime);
             UpdateEnemies(gameTime);
             if(speedBoots.Update(gameTime, player)) 
@@ -67,6 +73,13 @@ namespace ManicFEUP
             UpdateJumps(gameTime, keyboardState);
             weapon.Update(gameTime, player);
             previousKey = keyboardState;
+            UpdateShots(gameTime);
+            for (int i = 0; i < platformsFalling.Count; i++)
+                if (platformsFalling[i].Update(gameTime, player)) {
+                    tiles[(int)platformsFalling[i].X / tileSet.Width, (int)platformsFalling[i].Y / tileSet.Height] = new Tile(TileCollision.Passable); //Apaga do tileset
+                    platformsFalling.Remove(platformsFalling[i]); //Apaga da lista
+                }
+
         }
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
@@ -80,6 +93,10 @@ namespace ManicFEUP
             speedBoots.Draw(gameTime, spriteBatch);
             jumpBoots.Draw(gameTime, spriteBatch);
             weapon.Draw(gameTime, spriteBatch);
+            foreach (Shot shot in shots)
+                shot.Draw(gameTime, spriteBatch);
+            foreach (PlatformFalling platform in platformsFalling)
+                platform.Draw(gameTime, spriteBatch);
 
             DrawHUD(gameTime, spriteBatch);
             
@@ -105,6 +122,8 @@ namespace ManicFEUP
 
         private void DrawHUD(GameTime gameTime, SpriteBatch spriteBatch) {
             noJumps.Draw(spriteBatch, "x " + ((jumpsLeft - 1 >= 0) ? jumpsLeft - 1 : 0), Color.White);
+            if (player.Weapon) xToShoot.Draw(spriteBatch, "Press \"X\" to shoot", Color.White);
+
             jumpBoots.DrawHUDCopy(gameTime, spriteBatch, 10, 400);
             
             if(speedBootsOn) speedBoots.DrawHUDCopy(gameTime, spriteBatch, 10, 420);
@@ -161,7 +180,7 @@ namespace ManicFEUP
             {
                 case '.': return new Tile(TileCollision.Passable);    // Blank space
                 case '#': return new Tile(0, 6, TileCollision.Impassable);  // Impassable block
-                case '~': return new Tile(0, 7, TileCollision.Platform);    // Platform block     
+                case '~': return LoadFallingPlatform(x, y); //return new Tile(0, 7, TileCollision.Platform);    // Platform block     
                 case ':': return new Tile(0, 8, TileCollision.Passable);    // Passable block 
                 case '-': return new Tile(1, 7, TileCollision.Platform);  // Floating platform
                 case '1': return LoadStartTile(x, y); // Player 1 start point  
@@ -169,7 +188,7 @@ namespace ManicFEUP
                 case 'K': return LoadKeyTile(x, y); // Key
                 case 'B': return LoadSpeedBootsTile(x, y); //Speed Boots
                 case 'J': return LoadJumpBootsTile(x, y); //Jump Boots
-                case 'E': return LoadEnemyTile(x, y, "sprEnemy");   // Various enemies
+                case 'E': return LoadEnemyTile(x, y, "sprEnemy", 3);   // Various enemies
                 case 'W': return LoadWeaponTile(x, y);  //Weapon
                 // Unknown tile type character
                 default: throw new NotSupportedException(String.Format("Unsupported tile type character '{0}' at position {1}, {2}.", tileType, x, y));
@@ -194,10 +213,10 @@ namespace ManicFEUP
             return new Tile(TileCollision.Passable);
         }
 
-        private Tile LoadEnemyTile(int x, int y, string assetName)
+        private Tile LoadEnemyTile(int x, int y, string assetName, int life)
         {
             Vector2 position = RectUtils.GetBottomCenter(GetBounds(x, y));
-            enemies.Add(new Enemy(this, position, assetName));
+            enemies.Add(new Enemy(this, position, assetName, life));
             return new Tile(TileCollision.Passable);
         }
 
@@ -224,6 +243,12 @@ namespace ManicFEUP
             Vector2 position = new Vector2(x * tileSet.Width, y * tileSet.Height);
             weapon = new Weapon(this, position);
             return new Tile(TileCollision.Passable);
+        }
+
+        private Tile LoadFallingPlatform(int x, int y) {
+            Vector2 position = new Vector2(x * tileSet.Width, y * tileSet.Height);
+            platformsFalling.Add(new PlatformFalling(this, position));
+            return new Tile(TileCollision.Platform);
         }
 
 
@@ -266,7 +291,13 @@ namespace ManicFEUP
                 if (jumpsLeft == 0)
                     jumpBoots.reset(player);
             }
-            if (player.onGround) countJump = true;
+            if (player.onGround && !keyboardState.IsKeyDown(Keys.Space)) countJump = true;
+        }
+
+        private void UpdateShots (GameTime gameTime) {
+            for (int i = 0; i < shots.Count; i++)
+                if (shots[i].Update(gameTime, enemies))
+                    shots.Remove(shots[i--]);
         }
 
         public Rectangle GetBounds(int x, int y)

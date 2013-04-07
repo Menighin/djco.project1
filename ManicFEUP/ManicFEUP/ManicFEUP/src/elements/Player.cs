@@ -28,6 +28,7 @@ namespace ManicFEUP
         private const float GravityAcceleration = 2000.0f;          //3400.0f;
         private const float MaxFallSpeed = 500.0f;                  //550.0f;
         private const float JumpControlPower = 0.14f;               //0.14f
+        private const int MaxShots = 3;
 
         private Vector2 Position;
         private Vector2 velocity;
@@ -39,6 +40,8 @@ namespace ManicFEUP
         private bool wasJumping;
         private float jumpTime;
         private bool canShoot;
+        private int side;
+        private float shootInterval;
 
         private SceneLevel level;
         private int previousBottom;
@@ -82,9 +85,9 @@ namespace ManicFEUP
             localBounds = new Rectangle(10, 1, 12, 31); //Caixa de colisao
         }
 
-        public void Update(GameTime gameTime, KeyboardState keyboardState)
+        public void Update(GameTime gameTime, KeyboardState keyboardState, List<Shot> shots)
         {
-            GetInput(keyboardState);    //Get input
+            GetInput(gameTime, keyboardState, shots);    //Get input
             ApplyPhysics(gameTime);     //Apply Physics
 
             if (movement > 0)
@@ -105,7 +108,7 @@ namespace ManicFEUP
             sprMask.Draw(gameTime, spriteBatch, Position);
         }
 
-        private void GetInput(KeyboardState keyboardState)
+        private void GetInput(GameTime gameTime, KeyboardState keyboardState, List<Shot> shots)
         {
             // Ignore small movements to prevent running in place.
             if (Math.Abs(movement) < 0.5f)
@@ -115,20 +118,31 @@ namespace ManicFEUP
             if ( keyboardState.IsKeyDown(Keys.Left) )
             {
                 movement = -1.0f;
+                side = -1;
             }
             else if (keyboardState.IsKeyDown(Keys.Right) )
             {
                 movement = 1.0f;
+                side = 1;
             }
 
             // Check if the player wants to jump.
             isJumping = keyboardState.IsKeyDown(Keys.Space);
 
+            // Player atirando
+            shootInterval -= (float)gameTime.ElapsedGameTime.TotalSeconds;
             if (canShoot && keyboardState.IsKeyDown(Keys.X)) {
-                //ATIRA MOTHAFOCKA
-
+                if (shots.Count < MaxShots) {
+                    if (shootInterval < 0 || shots.Count == 0) {
+                        if (side >= 0)
+                            shots.Add(new Shot(level, new Vector2(Position.X, Position.Y - 20), side));
+                        else
+                            shots.Add(new Shot(level, new Vector2(Position.X - 10, Position.Y - 20), side));
+                        shootInterval = 0.2f;
+                    }
+                }
             }
-
+            
 
         }
 
@@ -225,8 +239,7 @@ namespace ManicFEUP
                 {
                     // If this tile is collidable,
                     TileCollision collision = level.GetCollision(x, y);
-                    if (collision != TileCollision.Passable)
-                    {
+                    if (collision != TileCollision.Passable) {
                         // Determine collision depth (with direction) and magnitude.
                         Rectangle tileBounds = level.GetBounds(x, y);
                         Vector2 depth = RectUtils.GetIntersectionDepth(bounds, tileBounds);

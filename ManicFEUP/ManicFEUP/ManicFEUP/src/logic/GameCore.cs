@@ -33,6 +33,8 @@ namespace ManicFEUP
             Content.RootDirectory = "Content";
             screenWidth = graphics.PreferredBackBufferWidth;
             screenHeight = graphics.PreferredBackBufferHeight;
+
+            Window.AllowUserResizing = true;
         }
 
         /// <summary>
@@ -55,6 +57,10 @@ namespace ManicFEUP
             using (Stream fileStream = TitleContainer.OpenStream("Content/Level1.txt"))
                 level = new SceneLevel(Services, fileStream);
             level.Load();
+        }
+
+        void Window_ClientSizeChanged(object sender, EventArgs e) {
+           
         }
 
         /// <summary>

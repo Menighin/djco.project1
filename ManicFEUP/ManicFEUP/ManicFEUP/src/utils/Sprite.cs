@@ -82,7 +82,7 @@ namespace ManicFEUP
                 animate = false;
         }
 
-        public void Draw(GameTime gameTime, SpriteBatch spriteBatch, Vector2 position)
+        public void Draw(GameTime gameTime, SpriteBatch spriteBatch, Vector2 position, Color? c = null)
         {
             if (animate)
             {
@@ -98,8 +98,10 @@ namespace ManicFEUP
                 }
             }
 
+            Color color = c.HasValue ? c.Value : Color.White;
+
             Rectangle rect = new Rectangle(frameIndex * frameWidth, 0, frameWidth, frameHeight);
-            spriteBatch.Draw(texture, position - origin, rect, Color.White);
+            spriteBatch.Draw(texture, position - origin, rect, color);
 
         }
 

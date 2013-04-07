@@ -22,7 +22,11 @@ namespace ManicFEUP
         private const float MoveSpeed = 64.0f;
         private const float MaxWaitTime = 0.5f;
         private float waitTime;
+        private float shotTime = 0.1f;
         private FaceDirection direction;
+        private int life;
+        private bool isAlive;
+        private bool beenHit;
 
         public Vector2 Position;
         public SceneLevel level;
@@ -38,10 +42,13 @@ namespace ManicFEUP
         }
 
 
-        public Enemy(SceneLevel level, Vector2 Pos, string assetName) 
+        public Enemy(SceneLevel level, Vector2 Pos, string assetName, int life) 
         {
             this.level = level;
             this.Position = Pos;
+            this.life = life;
+            isAlive = true;
+            beenHit = false;
 
             LoadContent(assetName);
             direction = FaceDirection.Right;
@@ -54,8 +61,7 @@ namespace ManicFEUP
             localBounds = new Rectangle(10, 0, 14, 32); //Caixa de colisao
         }
 
-        public void Update(GameTime gameTime)
-        {
+        public void Update(GameTime gameTime) {
             float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             // Calculate tile position based on the side we are walking towards.
@@ -102,7 +108,34 @@ namespace ManicFEUP
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            sprite.Draw(gameTime, spriteBatch, Position);
+            if (!beenHit) { // Desenha normal
+                sprite.Draw(gameTime, spriteBatch, Position);
+                //shotTime = 0.1f;
+            }
+            else { // Desenha como se tivesse levado tiro
+                sprite.Draw(gameTime, spriteBatch, Position, Color.Red);
+                shotTime -= (float)gameTime.ElapsedGameTime.TotalSeconds;
+                if (shotTime < 0) { // Calcula tempo da animacao de tiro
+                    beenHit = false;
+                    shotTime = 0.1f;
+                }
+            }
         }
+
+        public bool IsALive {
+            get { return isAlive; }
+            set { isAlive = value; }
+        }
+
+        public int Life {
+            get { return life; }
+            set { life = value; }
+        }
+
+        public bool BeenHit {
+            get { return beenHit; }
+            set { beenHit = value; }
+        }
+
     }
 }
