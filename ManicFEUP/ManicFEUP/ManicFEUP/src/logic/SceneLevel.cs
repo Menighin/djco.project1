@@ -272,7 +272,7 @@ namespace ManicFEUP
         {
             foreach (Enemy enemy in enemies)
             {
-                enemy.Update(gameTime);
+                enemy.Update(gameTime, player);
                 // Touching an enemy instantly kills the player
                 //if (enemy.Bounding.Intersects(player.Bounding))
                 //{

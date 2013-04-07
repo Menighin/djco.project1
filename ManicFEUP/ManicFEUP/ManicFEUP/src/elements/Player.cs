@@ -31,9 +31,12 @@ namespace ManicFEUP
         private const int MaxShots = 3;
 
         private Vector2 Position;
+        private Vector2 startPosition;
         private Vector2 velocity;
         private Sprite sprite;
+        private Sprite HUDsprite;
         private bool isAlive;
+        private int lifes = 3;
         private bool isOnGround;
         private float movement;
         private bool isJumping;
@@ -63,7 +66,9 @@ namespace ManicFEUP
         {
             this.level = level;
             this.Position = pos;
+            this.startPosition = pos;
             this.canShoot = false;
+            isAlive = true;
 
             Reset(Position);
             LoadContent();
@@ -81,6 +86,7 @@ namespace ManicFEUP
         {
             this.sprite = new Sprite(level.Content.Load<Texture2D>("sprPlayer"), 32, 32, 6, new Vector2(16,31));
             this.sprMask = new Sprite(level.Content.Load<Texture2D>("sprPlayerMask"), 32, 32, 1, new Vector2(16, 31));
+            this.HUDsprite = new Sprite(level.Content.Load<Texture2D>("sprPlayer"), 32, 32, 6, new Vector2(16, 31));
 
             localBounds = new Rectangle(10, 1, 12, 31); //Caixa de colisao
         }
@@ -100,12 +106,24 @@ namespace ManicFEUP
             // Clear input.
             movement = 0.0f;
             isJumping = false;
+            HUDsprite.SetAnimLoop(0, 0, 0.2f);
+
+            // If is dead
+            if (!isAlive) {
+                Position = startPosition;
+                lifes--;
+                isAlive = true;
+            }
         }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             sprite.Draw(gameTime, spriteBatch, Position);
-            sprMask.Draw(gameTime, spriteBatch, Position);
+            //sprMask.Draw(gameTime, spriteBatch, Position);
+
+            // Draw hud
+            for (int i = 0; i < lifes; i++)
+                HUDsprite.Draw(gameTime, spriteBatch, new Vector2(20 + i * 25, 380));
         }
 
         private void GetInput(GameTime gameTime, KeyboardState keyboardState, List<Shot> shots)
@@ -308,6 +326,11 @@ namespace ManicFEUP
         public bool Weapon {
             get { return canShoot; }
             set { canShoot = value; }
+        }
+
+        public bool IsAlive {
+            get { return isAlive; }
+            set { isAlive = value; }
         }
     }
 }

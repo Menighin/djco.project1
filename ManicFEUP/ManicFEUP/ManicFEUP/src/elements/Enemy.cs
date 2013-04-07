@@ -61,7 +61,7 @@ namespace ManicFEUP
             localBounds = new Rectangle(10, 0, 14, 32); //Caixa de colisao
         }
 
-        public void Update(GameTime gameTime) {
+        public void Update(GameTime gameTime, Player player) {
             float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             // Calculate tile position based on the side we are walking towards.
@@ -104,6 +104,12 @@ namespace ManicFEUP
                     Position = Position + velocity;
                 }
             }
+
+            // Kill the player
+            if (Bounding.Intersects(player.Bounding))
+                player.IsAlive = false;
+
+
         }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
