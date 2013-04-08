@@ -53,7 +53,6 @@ namespace ManicFEUP
         public SceneLevel(GameServiceContainer Services, Stream fileStream) : base(Services)
         {
             LoadTiles("tileset", fileStream);  // Load TileSet and Tiles
-
             //Load backgrounds
             //Load sounds
         }
@@ -82,7 +81,7 @@ namespace ManicFEUP
                     platformsFalling.Remove(platformsFalling[i]); //Apaga da lista
                 }
 
-            if (door.Active && door.Bounding.Intersects(player.Bounding))
+            if ((door.Active && door.Bounding.Intersects(player.Bounding)) || player.Lifes == 0)
             {
                 return false;
             }

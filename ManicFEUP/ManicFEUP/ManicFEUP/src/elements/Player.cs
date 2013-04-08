@@ -332,5 +332,9 @@ namespace ManicFEUP
             get { return isAlive; }
             set { isAlive = value; }
         }
+
+        public int Lifes {
+            get { return lifes; }
+        }
     }
 }
