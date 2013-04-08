@@ -18,6 +18,7 @@ namespace ManicFEUP
         protected List<Enemy> enemies = new List<Enemy>();
         protected List<PlatformFalling> platformsFalling = new List<PlatformFalling>();
         protected Door door;
+        protected List<Spike> spikes = new List<Spike>();
         protected SpeedBoots speedBoots;
         protected JumpBoots jumpBoots;
         protected Weapon weapon;
@@ -63,11 +64,12 @@ namespace ManicFEUP
             xToShoot.Load(Content);
         }
 
-        public override void Update(GameTime gameTime, KeyboardState keyboardState)
+        public override bool Update(GameTime gameTime, KeyboardState keyboardState)
         {
             player.Update(gameTime, keyboardState, shots);
             UpdateKeys(gameTime);
             UpdateEnemies(gameTime);
+            UpdateSpikes(gameTime);
             if(speedBoots.Update(gameTime, player)) 
                 speedBootsOn = true;
             UpdateJumps(gameTime, keyboardState);
@@ -80,14 +82,26 @@ namespace ManicFEUP
                     platformsFalling.Remove(platformsFalling[i]); //Apaga da lista
                 }
 
+            if (door.Active && door.Bounding.Intersects(player.Bounding))
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             DrawTiles(spriteBatch);
+
+            foreach (Spike spike in spikes)
+                spike.Draw(gameTime, spriteBatch);
+
             foreach (Key key in keys)
                 key.Draw(gameTime, spriteBatch);
+
             player.Draw(gameTime, spriteBatch);
+
             foreach (Enemy enemy in enemies)
                 enemy.Draw(gameTime, spriteBatch);
             speedBoots.Draw(gameTime, spriteBatch);
@@ -97,6 +111,8 @@ namespace ManicFEUP
                 shot.Draw(gameTime, spriteBatch);
             foreach (PlatformFalling platform in platformsFalling)
                 platform.Draw(gameTime, spriteBatch);
+
+            door.Draw(gameTime, spriteBatch);
 
             DrawHUD(gameTime, spriteBatch);
             
@@ -182,8 +198,12 @@ namespace ManicFEUP
                 case '#': return new Tile(0, 6, TileCollision.Impassable);  // Impassable block
                 case '~': return LoadFallingPlatform(x, y); //return new Tile(0, 7, TileCollision.Platform);    // Platform block     
                 case ':': return new Tile(0, 8, TileCollision.Passable);    // Passable block 
-                case '-': return new Tile(1, 7, TileCollision.Platform);  // Floating platform
-                case '1': return LoadStartTile(x, y); // Player 1 start point  
+                case '-': return new Tile(0, 7, TileCollision.Platform);  // Floating platform
+                case '0': return LoadSpikeTile(x, y, 0);
+                case '1': return LoadSpikeTile(x, y, 1);
+                case '2': return LoadSpikeTile(x, y, 2);
+                case '3': return LoadSpikeTile(x, y, 3);
+                case 'P': return LoadStartTile(x, y); // Player 1 start point  
                 case 'X': return LoadExitTile(x, y);    // Door
                 case 'K': return LoadKeyTile(x, y); // Key
                 case 'B': return LoadSpeedBootsTile(x, y); //Speed Boots
@@ -208,8 +228,8 @@ namespace ManicFEUP
             if (exit != InvalidPosition)
                 throw new NotSupportedException("A level may only have one exit.");
 
-            //exit = GetBounds(x, y).Center;
-            //door = new Door();
+            exit = new Point(x * tileSet.Width, y * tileSet.Height);
+            door = new Door(this, new Vector2(exit.X, exit.Y) );
             return new Tile(TileCollision.Passable);
         }
 
@@ -251,6 +271,12 @@ namespace ManicFEUP
             return new Tile(TileCollision.Platform);
         }
 
+        private Tile LoadSpikeTile(int x, int y, int type)
+        {
+            Vector2 position = new Vector2(x * tileSet.Width, y * tileSet.Height);
+            spikes.Add(new Spike(this, position, type));
+            return new Tile(TileCollision.Passable);
+        }
 
         #endregion
 
@@ -264,6 +290,9 @@ namespace ManicFEUP
                 {
                     keys.RemoveAt(i--);
                     //OnGemCollected(gem, Player);
+
+                    if (keys.Count == 0)
+                        door.SetActive(true);
                 }
             }
         }
@@ -273,11 +302,28 @@ namespace ManicFEUP
             foreach (Enemy enemy in enemies)
             {
                 enemy.Update(gameTime, player);
+                
                 // Touching an enemy instantly kills the player
-                //if (enemy.Bounding.Intersects(player.Bounding))
-                //{
+                if (enemy.Bounding.Intersects(player.Bounding))
+                {
                 //    OnPlayerKilled(enemy);
-                //}
+                    player.IsAlive = false;
+                }
+                // Kill the player
+                    
+            }
+        }
+
+        private void UpdateSpikes(GameTime gameTime)
+        {
+            for (int i = 0; i < spikes.Count; ++i)
+            {
+                Spike spike = spikes[i];
+                //key.Update(gameTime);
+                if (spike.Bounding.Intersects(player.Bounding))
+                {
+                    player.IsAlive = false;
+                }
             }
         }
 

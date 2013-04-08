@@ -13,7 +13,7 @@ namespace ManicFEUP {
 
         enum Side { Right, Left };
 
-        private const float speed = 3.0f;
+        private const float speed = 5.0f;
         private Side direction;
 
         public SceneLevel level;

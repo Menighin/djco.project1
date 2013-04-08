@@ -37,15 +37,11 @@ namespace ManicFEUP
             Window.AllowUserResizing = true;
         }
 
-        /// <summary>
-        /// </summary>
         protected override void Initialize()
         {
             base.Initialize();
         }
 
-        /// <summary>
-        /// </summary>
         protected override void LoadContent()
         {
             // Create a new SpriteBatch, which can be used to draw textures.
@@ -53,35 +49,48 @@ namespace ManicFEUP
             // Load Textures
             // Load Sounds
 
-            // Load the level.
-            using (Stream fileStream = TitleContainer.OpenStream("Content/Level1.txt"))
-                level = new SceneLevel(Services, fileStream);
-            level.Load();
+            LoadLevel(0);   //Load the menu
+        }
+
+        protected void LoadLevel(int levelNumber)
+        {
+            switch (levelNumber)
+            {
+                case 0:
+                    level = new SceneMenu(Services);
+                    level.Load();
+                    break;
+                case 1:
+                    using (Stream fileStream = TitleContainer.OpenStream("Content/Level1.txt"))
+                        level = new SceneLevel(Services, fileStream);
+                    level.Load();
+                    break;
+            }
+
+
         }
 
         void Window_ClientSizeChanged(object sender, EventArgs e) {
            
         }
 
-        /// <summary>
-        /// </summary>
         protected override void UnloadContent()
         {
         }
 
-        /// <summary>
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
             HandleInput();      // Handle Input
-            level.Update(gameTime, keyboardState);  // Update Level
+            if (!level.Update(gameTime, keyboardState))  // Update Level
+            {
+                if (level is SceneMenu)
+                    LoadLevel(1);
+                else
+                    LoadLevel(0);
+            }
             base.Update(gameTime);
         }
 
-        /// <summary>
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime) {
             GraphicsDevice.Clear(Color.Black);  // Clear background to black
             spriteBatch.Begin();
@@ -90,7 +99,6 @@ namespace ManicFEUP
 
             base.Draw(gameTime);
         }
-
 
         private void HandleInput()
         {

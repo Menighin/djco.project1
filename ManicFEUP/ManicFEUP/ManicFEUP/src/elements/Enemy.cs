@@ -105,10 +105,6 @@ namespace ManicFEUP
                 }
             }
 
-            // Kill the player
-            if (Bounding.Intersects(player.Bounding))
-                player.IsAlive = false;
-
 
         }
 

@@ -13,7 +13,7 @@ namespace ManicFEUP
         private Sprite sprite;
         private Vector2 Position;
 
-        public SceneLevel level;
+        public Scene level;
         public Rectangle Bounding
         {
             get
@@ -23,7 +23,7 @@ namespace ManicFEUP
             }
         }
 
-        public Key(SceneLevel level, Vector2 position)
+        public Key(Scene level, Vector2 position)
         {
             this.level = level;
             this.Position = position;
@@ -50,14 +50,42 @@ namespace ManicFEUP
     class Door
     {
         private Sprite sprite;
-        private Vector2 position;
+        private Vector2 Position;
+        private bool active;
 
-        public Door()
+        public Scene level;
+        public Rectangle Bounding
         {
+            get
+            {
+                return new Rectangle((int)Math.Round(Position.X),
+                                     (int)Math.Round(Position.Y), 32, 32);
+            }
+        }
+        public bool Active { get { return active; } }
+
+        public Door(Scene level, Vector2 position)
+        {
+            this.level = level;
+            this.Position = position;
+            this.active = false;
+
+            LoadContent();
+        }
+
+        public void SetActive(bool active)
+        {
+            this.active = active;
+
+            if (active)
+                sprite.SetAnimLoop(0, 1, 0.2f);
+            else
+                sprite.SetAnim(false);
         }
 
         public void LoadContent()
         {
+            this.sprite = new Sprite(level.Content.Load<Texture2D>("sprDoor"), 32, 32, 2, new Vector2(0, 0));
         }
 
         public void Update(GameTime gameTime, KeyboardState keyboardState)
@@ -66,20 +94,39 @@ namespace ManicFEUP
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
+            sprite.Draw(gameTime, spriteBatch, Position);
         }
     }
 
-    class RoseBush
+    class Spike
     {
         private Sprite sprite;
-        private Vector2 position;
+        private Vector2 Position;
+        private int spikeType;
 
-        public RoseBush()
+        public Scene level;
+        public Rectangle Bounding
         {
+            get
+            {
+                return new Rectangle((int)Math.Round(Position.X),
+                                     (int)Math.Round(Position.Y), 16, 16);
+            }
+        }
+
+        public Spike(Scene level, Vector2 position, int type)
+        {
+            this.level = level;
+            this.Position = position;
+            this.spikeType = type;
+
+            LoadContent();
         }
 
         public void LoadContent()
         {
+            this.sprite = new Sprite(level.Content.Load<Texture2D>("sprSpikes"), 16, 16, 4, new Vector2(0, 0));
+            this.sprite.SetAnimLoop(spikeType, spikeType, 0.0f);
         }
 
         public void Update(GameTime gameTime, KeyboardState keyboardState)
@@ -88,6 +135,7 @@ namespace ManicFEUP
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
+            sprite.Draw(gameTime, spriteBatch, Position);
         }
     }
 
@@ -120,8 +168,8 @@ namespace ManicFEUP
         public bool Update(GameTime gameTime, Player player) {
             if (this.visible && this.Bounding.Intersects(player.Bounding)) {
                 visible = false;
-                player.Speed *= 2;
-                player.Acceleration *= 1.50f;
+                player.Speed *= 1.5f;
+                player.Acceleration *= 1.3f;
                 return true;
             }
             return false;
@@ -167,14 +215,14 @@ namespace ManicFEUP
         public Boolean Update(GameTime gameTime, Player player) {
             if (visible && Bounding.Intersects(player.Bounding)) {
                 visible = false;
-                player.Jump *= 2;
+                player.Jump *= 1.5f;
                 return true;
             }
             return false;
         }
 
         public void reset(Player player) {
-            player.Jump /= 2;
+            player.Jump /= 1.5f;
         }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch) {

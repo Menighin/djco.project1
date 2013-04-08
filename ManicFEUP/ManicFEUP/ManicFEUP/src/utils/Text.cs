@@ -24,7 +24,5 @@ namespace ManicFEUP {
         public void Draw(SpriteBatch spriteBatch, String text, Color color) {
             spriteBatch.DrawString(font, text, position, color);
         }
-
-    
     }
 }

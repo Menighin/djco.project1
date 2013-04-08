@@ -12,7 +12,7 @@ namespace ManicFEUP {
         private Vector2 Position;
         private int frame;
         private float timeFrame;
-        private const float TimeToFall = 0.05f;
+        private const float TimeToFall = 0.2f;
 
         private const float speed = 3.0f;
 

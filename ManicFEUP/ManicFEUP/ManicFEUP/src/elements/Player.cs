@@ -18,12 +18,12 @@ namespace ManicFEUP
     class Player 
     {
         // Constants for controling horizontal movement
-        private float MoveAcceleration = 11000.0f;            // 13000.0f;
+        private float MoveAcceleration = 9500.0f;            // 13000.0f;
         private float MaxMoveSpeed = 1000.0f;                 //1750.0f;
         private const float GroundDragFactor = 0.48f;               //0.48f;
-        private const float AirDragFactor = 0.52f;                  //0.58f;
+        private const float AirDragFactor = 0.49f;                  //0.58f;
         // Constants for controlling vertical movement
-        private float MaxJumpTime = 0.38f;                    // 0.35f;
+        private float MaxJumpTime = 0.35f;                    // 0.35f;
         private const float JumpLaunchVelocity = -1400.0f;        //-3500.0f;
         private const float GravityAcceleration = 2000.0f;          //3400.0f;
         private const float MaxFallSpeed = 500.0f;                  //550.0f;
