@@ -17,23 +17,27 @@ namespace ManicFEUP
         protected List<Shot> shots = new List<Shot>();
         protected List<Enemy> enemies = new List<Enemy>();
         protected List<PlatformFalling> platformsFalling = new List<PlatformFalling>();
+        protected List<PlatformFalling> platformsFallingBackup = new List<PlatformFalling>();
         protected Door door;
         protected List<Spike> spikes = new List<Spike>();
         protected SpeedBoots speedBoots;
         protected JumpBoots jumpBoots;
         protected Weapon weapon;
+        protected EnergyMeter energyMeter;
         
         // Textos
         protected Text noJumps = new Text("manicFont", 50, 400);
         protected Text xToShoot = new Text("manicFont", 50, 440);
+        protected Text energyText = new Text("manicFont", 150, 395);
 
         public TileSet tileSet;
         protected Tile[,] tiles;
+        protected Tile[,] tilesBackup;
         protected Vector2 start;
         protected Point exit = InvalidPosition;
         private static readonly Point InvalidPosition = new Point(-1, -1);
 
-        protected int energy;
+        protected const int energy = 600;
         protected int highScore;
         protected int score;
         protected int jumpsLeft = 0;
@@ -53,6 +57,8 @@ namespace ManicFEUP
         public SceneLevel(GameServiceContainer Services, Stream fileStream) : base(Services)
         {
             LoadTiles("tileset", fileStream);  // Load TileSet and Tiles
+            energyMeter = new EnergyMeter(this, new Vector2(150, 370), energy);
+            backup();
             //Load backgrounds
             //Load sounds
         }
@@ -61,6 +67,7 @@ namespace ManicFEUP
             // Loading Fonts
             noJumps.Load(Content);
             xToShoot.Load(Content);
+            energyText.Load(Content);
         }
 
         public override bool Update(GameTime gameTime, KeyboardState keyboardState)
@@ -85,6 +92,8 @@ namespace ManicFEUP
             {
                 return false;
             }
+
+            energyMeter.Update(gameTime, player);
 
             return true;
         }
@@ -137,12 +146,16 @@ namespace ManicFEUP
 
         private void DrawHUD(GameTime gameTime, SpriteBatch spriteBatch) {
             noJumps.Draw(spriteBatch, "x " + ((jumpsLeft - 1 >= 0) ? jumpsLeft - 1 : 0), Color.White);
+            energyText.Draw(spriteBatch, "Energy", Color.White);
             if (player.Weapon) xToShoot.Draw(spriteBatch, "Press \"X\" to shoot", Color.White);
 
             jumpBoots.DrawHUDCopy(gameTime, spriteBatch, 10, 400);
             
             if(speedBootsOn) speedBoots.DrawHUDCopy(gameTime, spriteBatch, 10, 420);
             if (player.Weapon) weapon.DrawHUDCopy(gameTime, spriteBatch, 10, 440);
+
+            energyMeter.Draw(gameTime, spriteBatch);
+
         }
 
         #region LoadingScene
@@ -167,6 +180,7 @@ namespace ManicFEUP
             }
             // Allocate the tile grid.
             tiles = new Tile[width, lines.Count];
+            tilesBackup = new Tile[width, lines.Count];
 
             this.width = width;
             this.height = lines.Count;
@@ -361,5 +375,17 @@ namespace ManicFEUP
 
             return tiles[x, y].Collision;
         }
+
+        // Funções para retornar ao estado inicial apos o player morrer
+        private void backup() {
+            tilesBackup = tiles;
+            platformsFallingBackup = platformsFalling;
+        }
+
+        public void reset() {
+            tiles = tilesBackup;
+            platformsFalling = platformsFallingBackup;
+        }
+
     }
 }

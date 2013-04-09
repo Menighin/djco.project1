@@ -111,6 +111,7 @@ namespace ManicFEUP
             // If is dead
             if (!isAlive) {
                 Position = startPosition;
+                level.reset();
                 lifes--;
                 isAlive = true;
             }
@@ -270,7 +271,7 @@ namespace ManicFEUP
                             if (absDepthY < absDepthX || collision == TileCollision.Platform)
                             {
                                 // If we crossed the top of a tile, we are on the ground.
-                                if (previousBottom <= tileBounds.Top)
+                                if (previousBottom <= tileBounds.Top )
                                     isOnGround = true;
 
                                 // Check if hit the roof

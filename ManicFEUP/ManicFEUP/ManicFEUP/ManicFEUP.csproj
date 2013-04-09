@@ -73,6 +73,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="src\elements\Enemy.cs" />
+    <Compile Include="src\elements\EnergyMeter.cs" />
     <Compile Include="src\elements\PlatformFalling.cs" />
     <Compile Include="src\elements\Shot.cs" />
     <Compile Include="src\utils\Text.cs" />

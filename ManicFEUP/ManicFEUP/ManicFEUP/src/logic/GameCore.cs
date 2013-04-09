@@ -92,7 +92,7 @@ namespace ManicFEUP
         }
 
         protected override void Draw(GameTime gameTime) {
-            GraphicsDevice.Clear(Color.Black);  // Clear background to black
+            GraphicsDevice.Clear(new Color (0.1f, 0.1f, 0.1f));  // Clear background to black
             spriteBatch.Begin();
             level.Draw(gameTime, spriteBatch);  // Draw Level
             spriteBatch.End();
