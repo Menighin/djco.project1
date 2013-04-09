@@ -54,7 +54,7 @@ namespace ManicFEUP {
                 if (Bounding.Intersects(enemies[i].Bounding)) {
                     enemies[i].Life--;
                     enemies[i].BeenHit = true;
-                    if (enemies[i].Life == 0) enemies.Remove(enemies[i]);
+                    if (enemies[i].Life == 0) enemies[i].IsAlive = false;
                     return true;
                 }
 

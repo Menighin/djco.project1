@@ -9,6 +9,12 @@ using System.IO;
 
 namespace ManicFEUP
 {
+    enum LevelStates
+    {
+        Playing = 0,
+        GameOver = 1,
+        GameWon = 2
+    }
     class SceneLevel : Scene
     {
         private Player player;
@@ -24,6 +30,9 @@ namespace ManicFEUP
         protected JumpBoots jumpBoots;
         protected Weapon weapon;
         protected EnergyMeter energyMeter;
+
+        private LevelStates state;
+        private Text stateFont = new Text("manicFont", 300, 440);
         
         // Textos
         protected Text noJumps = new Text("manicFont", 50, 400);
@@ -59,6 +68,7 @@ namespace ManicFEUP
             LoadTiles("tileset", fileStream);  // Load TileSet and Tiles
             energyMeter = new EnergyMeter(this, new Vector2(150, 370), energy);
             backup();
+            state = LevelStates.Playing;
             //Load backgrounds
             //Load sounds
         }
@@ -68,10 +78,22 @@ namespace ManicFEUP
             noJumps.Load(Content);
             xToShoot.Load(Content);
             energyText.Load(Content);
+            stateFont.Load(Content);
         }
 
         public override bool Update(GameTime gameTime, KeyboardState keyboardState)
         {
+            if (state != LevelStates.Playing)
+            {
+                if (keyboardState.IsKeyDown(Keys.Enter))
+                    return false;
+
+                return true;
+            }
+
+            if (keyboardState.IsKeyDown(Keys.R))
+                this.reset();
+
             player.Update(gameTime, keyboardState, shots);
             UpdateKeys(gameTime);
             UpdateEnemies(gameTime);
@@ -85,15 +107,25 @@ namespace ManicFEUP
             for (int i = 0; i < platformsFalling.Count; i++)
                 if (platformsFalling[i].Update(gameTime, player)) {
                     tiles[(int)platformsFalling[i].X / tileSet.Width, (int)platformsFalling[i].Y / tileSet.Height] = new Tile(TileCollision.Passable); //Apaga do tileset
-                    platformsFalling.Remove(platformsFalling[i]); //Apaga da lista
+                    platformsFalling[i].IsActive = false;
                 }
 
-            if ((door.Active && door.Bounding.Intersects(player.Bounding)) || player.Lifes == 0)
+            energyMeter.Update(gameTime, player);
+
+            if (door.Active && door.Bounding.Intersects(player.Bounding))
             {
-                return false;
+                state = LevelStates.GameWon;
             }
 
-            energyMeter.Update(gameTime, player);
+            if (!player.IsAlive)
+            {
+                player.Lifes--;
+                if (player.Lifes == 0)
+                {
+                    state = LevelStates.GameOver;
+                }
+                this.reset();
+            }
 
             return true;
         }
@@ -106,19 +138,19 @@ namespace ManicFEUP
                 spike.Draw(gameTime, spriteBatch);
 
             foreach (Key key in keys)
-                key.Draw(gameTime, spriteBatch);
+                if(key.Active) key.Draw(gameTime, spriteBatch);
 
             player.Draw(gameTime, spriteBatch);
 
             foreach (Enemy enemy in enemies)
-                enemy.Draw(gameTime, spriteBatch);
+                if(enemy.IsAlive) enemy.Draw(gameTime, spriteBatch);
             speedBoots.Draw(gameTime, spriteBatch);
             jumpBoots.Draw(gameTime, spriteBatch);
             weapon.Draw(gameTime, spriteBatch);
             foreach (Shot shot in shots)
                 shot.Draw(gameTime, spriteBatch);
             foreach (PlatformFalling platform in platformsFalling)
-                platform.Draw(gameTime, spriteBatch);
+                if( platform.IsActive) platform.Draw(gameTime, spriteBatch);
 
             door.Draw(gameTime, spriteBatch);
 
@@ -152,9 +184,23 @@ namespace ManicFEUP
             jumpBoots.DrawHUDCopy(gameTime, spriteBatch, 10, 400);
             
             if(speedBootsOn) speedBoots.DrawHUDCopy(gameTime, spriteBatch, 10, 420);
-            if (player.Weapon) weapon.DrawHUDCopy(gameTime, spriteBatch, 10, 440);
+            if(player.Weapon) weapon.DrawHUDCopy(gameTime, spriteBatch, 10, 440);
 
             energyMeter.Draw(gameTime, spriteBatch);
+
+            if (state != LevelStates.Playing)
+            {
+                switch (state)
+                {
+                    case LevelStates.GameOver:
+                        stateFont.Draw(spriteBatch, "Game Over. Press Enter to Continue", Color.White);
+                        break;
+
+                    case LevelStates.GameWon:
+                        stateFont.Draw(spriteBatch, "You Won the Game! Press Enter to Continue", Color.White);
+                        break;
+                }
+            }
 
         }
 
@@ -221,7 +267,7 @@ namespace ManicFEUP
                 case 'K': return LoadKeyTile(x, y); // Key
                 case 'B': return LoadSpeedBootsTile(x, y); //Speed Boots
                 case 'J': return LoadJumpBootsTile(x, y); //Jump Boots
-                case 'E': return LoadEnemyTile(x, y, "sprEnemy", 3);   // Various enemies
+                case 'E': return LoadEnemyTile(x, y, "sprEnemy");   // Various enemies
                 case 'W': return LoadWeaponTile(x, y);  //Weapon
                 // Unknown tile type character
                 default: throw new NotSupportedException(String.Format("Unsupported tile type character '{0}' at position {1}, {2}.", tileType, x, y));
@@ -232,7 +278,8 @@ namespace ManicFEUP
         {
             if (player != null)
                 throw new NotSupportedException("A level may only have one starting point.");
-            player = new Player(this, new Vector2( x*tileSet.Width + tileSet.Width/2, y*tileSet.Height + tileSet.Height) );
+            start = new Vector2( x*tileSet.Width + tileSet.Width/2, y*tileSet.Height + tileSet.Height);
+            player = new Player(this, start );
             return new Tile(TileCollision.Passable);
         }
 
@@ -246,10 +293,10 @@ namespace ManicFEUP
             return new Tile(TileCollision.Passable);
         }
 
-        private Tile LoadEnemyTile(int x, int y, string assetName, int life)
+        private Tile LoadEnemyTile(int x, int y, string assetName)
         {
             Vector2 position = RectUtils.GetBottomCenter(GetBounds(x, y));
-            enemies.Add(new Enemy(this, position, assetName, life));
+            enemies.Add(new Enemy(this, position, assetName));
             return new Tile(TileCollision.Passable);
         }
 
@@ -292,19 +339,20 @@ namespace ManicFEUP
         }
 
         #endregion
-
+       
         private void UpdateKeys(GameTime gameTime)
         {
             for (int i = 0; i < keys.Count; ++i)
             {
                 Key key = keys[i];
                 //key.Update(gameTime);
-                if (key.Bounding.Intersects(player.Bounding))
+                if (key.Active && key.Bounding.Intersects(player.Bounding))
                 {
-                    keys.RemoveAt(i--);
+                    player.keyNumber++;
+                    keys[i].Active = false;
                     //OnGemCollected(gem, Player);
 
-                    if (keys.Count == 0)
+                    if (keys.Count == player.keyNumber)
                         door.SetActive(true);
                 }
             }
@@ -314,16 +362,18 @@ namespace ManicFEUP
         {
             foreach (Enemy enemy in enemies)
             {
-                enemy.Update(gameTime, player);
-                
-                // Touching an enemy instantly kills the player
-                if (enemy.Bounding.Intersects(player.Bounding))
+                if (enemy.IsAlive)
                 {
-                //    OnPlayerKilled(enemy);
-                    player.IsAlive = false;
+                    enemy.Update(gameTime, player);
+
+                    // Touching an enemy instantly kills the player
+                    if (enemy.Bounding.Intersects(player.Bounding))
+                    {
+                        //    OnPlayerKilled(enemy);
+                        player.IsAlive = false;
+                    }
+                    // Kill the player
                 }
-                // Kill the player
-                    
             }
         }
 
@@ -342,7 +392,7 @@ namespace ManicFEUP
 
         private void UpdateJumps(GameTime gameTime, KeyboardState keyboardState) {
             if (jumpBoots.Update(gameTime, player))
-                jumpsLeft = 6;
+                jumpsLeft = 11;
 
             if (jumpsLeft > 0 && keyboardState != previousKey && countJump && keyboardState.IsKeyDown(Keys.Space)) {
                 countJump = false;
@@ -385,6 +435,24 @@ namespace ManicFEUP
         public void reset() {
             tiles = tilesBackup;
             platformsFalling = platformsFallingBackup;
+
+            player.Reset(start);
+            weapon.Reset(player);
+            jumpBoots.reset(player);
+            jumpsLeft = 0;
+            speedBoots.Reset(player);
+            energyMeter.Reset();
+
+            foreach (Enemy enemy in enemies)
+                enemy.Reset();
+            foreach (Key key in keys)
+                key.Active = true;
+            foreach (PlatformFalling platform in platformsFalling)
+            {
+                platform.Reset();
+                tiles[(int)platform.X / tileSet.Width, (int)platform.Y / tileSet.Height] = new Tile(TileCollision.Platform); //Apaga do tileset
+            }
+            door.SetActive(false);
         }
 
     }

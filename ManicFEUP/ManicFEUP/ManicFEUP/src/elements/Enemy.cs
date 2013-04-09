@@ -25,6 +25,7 @@ namespace ManicFEUP
         private float shotTime = 0.1f;
         private FaceDirection direction;
         private int life;
+        private int lifeMax = 3;
         private bool isAlive;
         private bool beenHit;
 
@@ -42,11 +43,11 @@ namespace ManicFEUP
         }
 
 
-        public Enemy(SceneLevel level, Vector2 Pos, string assetName, int life) 
+        public Enemy(SceneLevel level, Vector2 Pos, string assetName) 
         {
             this.level = level;
             this.Position = Pos;
-            this.life = life;
+            this.life = lifeMax;
             isAlive = true;
             beenHit = false;
 
@@ -59,6 +60,12 @@ namespace ManicFEUP
         {
             this.sprite = new Sprite(level.Content.Load<Texture2D>(assetName), 32, 32, 6, new Vector2(16, 32));
             localBounds = new Rectangle(10, 0, 14, 32); //Caixa de colisao
+        }
+
+        public void Reset()
+        {
+            this.life = lifeMax;
+            this.isAlive = true;
         }
 
         public void Update(GameTime gameTime, Player player) {
@@ -124,7 +131,7 @@ namespace ManicFEUP
             }
         }
 
-        public bool IsALive {
+        public bool IsAlive {
             get { return isAlive; }
             set { isAlive = value; }
         }

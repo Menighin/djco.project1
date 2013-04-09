@@ -37,6 +37,11 @@ namespace ManicFEUP {
             rects[3] = level.Content.Load<Texture2D>("sprEnergyMeter");
         }
 
+        public void Reset()
+        {
+            life.Width = FullLife;
+        }
+
         public void Update(GameTime gameTime, Player player) {
             timeInterval -= (float)gameTime.ElapsedGameTime.TotalSeconds;
             if (timeInterval < 0) {

@@ -36,7 +36,7 @@ namespace ManicFEUP
         private Sprite sprite;
         private Sprite HUDsprite;
         private bool isAlive;
-        private int lifes = 3;
+        private int lifes = 1;
         private bool isOnGround;
         private float movement;
         private bool isJumping;
@@ -61,6 +61,7 @@ namespace ManicFEUP
                 return new Rectangle(left, top, localBounds.Width, localBounds.Height);
             }
         }
+        public int keyNumber;
 
         public Player(SceneLevel level, Vector2 pos) 
         {
@@ -69,6 +70,7 @@ namespace ManicFEUP
             this.startPosition = pos;
             this.canShoot = false;
             isAlive = true;
+            this.lifes = 3;
 
             Reset(Position);
             LoadContent();
@@ -80,6 +82,7 @@ namespace ManicFEUP
             this.velocity = Vector2.Zero;
             this.isAlive = true;
             this.isJumping = false;
+            this.keyNumber = 0;
         }
 
         public void LoadContent()
@@ -108,13 +111,7 @@ namespace ManicFEUP
             isJumping = false;
             HUDsprite.SetAnimLoop(0, 0, 0.2f);
 
-            // If is dead
-            if (!isAlive) {
-                Position = startPosition;
-                level.reset();
-                lifes--;
-                isAlive = true;
-            }
+
         }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
@@ -336,6 +333,7 @@ namespace ManicFEUP
 
         public int Lifes {
             get { return lifes; }
+            set { lifes = value; }
         }
     }
 }

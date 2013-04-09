@@ -13,7 +13,6 @@ namespace ManicFEUP
         private Texture2D background;
         private Vector2 bgPos;
 
-
         public SceneMenu(GameServiceContainer Services) : base(Services)
         {
         }

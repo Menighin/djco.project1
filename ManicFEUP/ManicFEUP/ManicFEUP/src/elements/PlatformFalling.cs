@@ -13,6 +13,7 @@ namespace ManicFEUP {
         private int frame;
         private float timeFrame;
         private const float TimeToFall = 0.2f;
+        private bool isActive;
 
         private const float speed = 3.0f;
 
@@ -24,21 +25,34 @@ namespace ManicFEUP {
             }
         }
 
+        public bool IsActive
+        {
+            get { return isActive; }
+            set { isActive = value; }
+        }
+
         public PlatformFalling(SceneLevel level, Vector2 position) {
             this.level = level;
             this.Position = position;
 
             LoadContent();
-            frame = 0;
-            sprite.SetAnimLoop(frame, frame, 0.2f);
+            Reset();
         }
 
         public void LoadContent() {
             this.sprite = new Sprite(level.Content.Load<Texture2D>("sprPlatformFalling"), 16, 14, 4, new Vector2(0, 0));
         }
 
+        public void Reset()
+        {
+            isActive = true;
+            frame = 0;
+            timeFrame = TimeToFall;
+            sprite.SetAnimLoop(frame, frame, 0.2f);
+        }
+
         public bool Update(GameTime gameTime, Player player) {
-            if (isStandingOnTop(player)) {
+            if (isActive && isStandingOnTop(player)) {
                 if (timeFrame < 0 && frame == 3) return true;
                 if ((timeFrame < 0 || frame == 0) && frame < 3) {
                     frame++;

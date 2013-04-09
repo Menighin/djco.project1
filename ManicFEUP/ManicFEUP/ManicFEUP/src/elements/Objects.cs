@@ -12,6 +12,7 @@ namespace ManicFEUP
     {
         private Sprite sprite;
         private Vector2 Position;
+        private bool active;
 
         public Scene level;
         public Rectangle Bounding
@@ -22,11 +23,17 @@ namespace ManicFEUP
                                      (int)Math.Round(Position.Y), 16, 16);
             }
         }
+        public bool Active
+        {
+            get { return active; }
+            set { active = value; }
+        }
 
         public Key(Scene level, Vector2 position)
         {
             this.level = level;
             this.Position = position;
+            this.active = true;
 
             LoadContent();
             sprite.SetAnimLoop(0, 3, 0.2f);
@@ -169,10 +176,20 @@ namespace ManicFEUP
             if (this.visible && this.Bounding.Intersects(player.Bounding)) {
                 visible = false;
                 player.Speed *= 1.5f;
-                player.Acceleration *= 1.3f;
+                player.Acceleration *= 1.5f;
                 return true;
             }
             return false;
+        }
+
+        public void Reset(Player player)
+        {
+            if (!visible)
+            {
+                player.Speed /= 1.5f;
+                player.Acceleration /= 1.5f;
+                visible = true;
+            }
         }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch) {
@@ -222,7 +239,11 @@ namespace ManicFEUP
         }
 
         public void reset(Player player) {
-            player.Jump /= 1.5f;
+            if (!visible)
+            {
+                player.Jump /= 1.5f;
+                visible = true;
+            }
         }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch) {
@@ -267,6 +288,12 @@ namespace ManicFEUP
                 visible = false;
                 player.Weapon = true;
             }
+        }
+
+        public void Reset(Player player)
+        {
+            visible = true;
+            player.Weapon = false;
         }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch) {
