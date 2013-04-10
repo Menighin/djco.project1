@@ -5,6 +5,8 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Content;
 
 namespace ManicFEUP {
     class Shot {
@@ -15,6 +17,8 @@ namespace ManicFEUP {
 
         private const float speed = 5.0f;
         private Side direction;
+        private ContentManager Content;
+        private SoundEffect sndHit;
 
         public SceneLevel level;
         public Rectangle Bounding {
@@ -24,9 +28,10 @@ namespace ManicFEUP {
             }
         }
 
-        public Shot(SceneLevel level, Vector2 position, int side) {
+        public Shot(SceneLevel level, Vector2 position, int side, ContentManager Content) {
             this.level = level;
             this.Position = position;
+            this.Content = Content;
 
             if (side >= 0) direction = Side.Right;
             else direction = Side.Left;
@@ -37,6 +42,7 @@ namespace ManicFEUP {
 
         public void LoadContent() {
             this.sprite = new Sprite(level.Content.Load<Texture2D>("shot"), 16, 16, 4, new Vector2(0, 0));
+            this.sndHit = Content.Load<SoundEffect>("sndHit");
         }
 
         public bool Update(GameTime gameTime, List<Enemy> enemies) {
@@ -51,10 +57,11 @@ namespace ManicFEUP {
         private bool HandleCollision(List<Enemy> enemies) {
 
             for (int i = 0; i < enemies.Count; i++)
-                if (Bounding.Intersects(enemies[i].Bounding)) {
+                if (Bounding.Intersects(enemies[i].Bounding) && enemies[i].IsAlive) {
                     enemies[i].Life--;
                     enemies[i].BeenHit = true;
                     if (enemies[i].Life == 0) enemies[i].IsAlive = false;
+                    sndHit.Play();
                     return true;
                 }
 

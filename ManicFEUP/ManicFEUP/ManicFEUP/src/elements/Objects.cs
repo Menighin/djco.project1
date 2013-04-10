@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Audio;
 
 namespace ManicFEUP
 {
@@ -165,11 +166,11 @@ namespace ManicFEUP
             visible = true;
             
             LoadContent();
-            sprite.SetAnimLoop(2, 2, 0.2f);
+            sprite.SetAnimLoop(0, 0, 0.2f);
         }
 
         public void LoadContent() {
-            this.sprite = new Sprite(level.Content.Load<Texture2D>("temporary"), 16, 16, 4, new Vector2(0, 0));
+            this.sprite = new Sprite(level.Content.Load<Texture2D>("sprObjects"), 16, 16, 3, new Vector2(0, 0));
         }
 
         public bool Update(GameTime gameTime, Player player) {
@@ -221,12 +222,12 @@ namespace ManicFEUP
             visible = true;
 
             LoadContent();
-            sprite.SetAnimLoop(3, 3, 0.2f);
+            sprite.SetAnimLoop(2, 2, 0.2f);
         }
 
 
         public void LoadContent() {
-            this.sprite = new Sprite(level.Content.Load<Texture2D>("temporary"), 16, 16, 4, new Vector2(0, 0));
+            this.sprite = new Sprite(level.Content.Load<Texture2D>("sprObjects"), 16, 16, 3, new Vector2(0, 0));
         }
 
         public Boolean Update(GameTime gameTime, Player player) {
@@ -275,18 +276,19 @@ namespace ManicFEUP
             visible = true;
 
             LoadContent();
-            sprite.SetAnimLoop(0, 1, 0.2f);
+            sprite.SetAnimLoop(1, 1, 0.2f);
         }
 
 
         public void LoadContent() {
-            this.sprite = new Sprite(level.Content.Load<Texture2D>("temporary"), 16, 16, 4, new Vector2(0, 0));
+            this.sprite = new Sprite(level.Content.Load<Texture2D>("sprObjects"), 16, 16, 3, new Vector2(0, 0));
         }
 
-        public void Update(GameTime gameTime, Player player) {
+        public void Update(GameTime gameTime, Player player, SoundEffect sndItem) {
             if (visible && Bounding.Intersects(player.Bounding)) {
                 visible = false;
                 player.Weapon = true;
+                sndItem.Play();
             }
         }
 

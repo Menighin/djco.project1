@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System.IO;
+using Microsoft.Xna.Framework.Audio;
 
 namespace ManicFEUP
 {
@@ -35,9 +36,15 @@ namespace ManicFEUP
         private Text stateFont = new Text("manicFont", 300, 440);
         
         // Textos
-        protected Text noJumps = new Text("manicFont", 50, 400);
-        protected Text xToShoot = new Text("manicFont", 50, 440);
-        protected Text energyText = new Text("manicFont", 150, 395);
+        protected Text noJumps = new Text("manicFont", 35, 400);
+        protected Text xToShoot = new Text("manicFont", 35, 440);
+        protected Text speedIncreased = new Text("manicFont", 35, 420);
+        protected Text energyText = new Text("manicFont", 155, 370);
+
+        // Sons
+        protected SoundEffect sndDie;
+        protected SoundEffect sndDieLast;
+        protected SoundEffect sndItem;
 
         public TileSet tileSet;
         protected Tile[,] tiles;
@@ -77,8 +84,12 @@ namespace ManicFEUP
             // Loading Fonts
             noJumps.Load(Content);
             xToShoot.Load(Content);
+            speedIncreased.Load(Content);
             energyText.Load(Content);
             stateFont.Load(Content);
+            sndDie = Content.Load<SoundEffect>("sndDie");
+            sndDieLast = Content.Load<SoundEffect>("sndDieLast");
+            sndItem = Content.Load<SoundEffect>("sndItem");
         }
 
         public override bool Update(GameTime gameTime, KeyboardState keyboardState)
@@ -98,10 +109,12 @@ namespace ManicFEUP
             UpdateKeys(gameTime);
             UpdateEnemies(gameTime);
             UpdateSpikes(gameTime);
-            if(speedBoots.Update(gameTime, player)) 
+            if (speedBoots.Update(gameTime, player)) {
                 speedBootsOn = true;
+                sndItem.Play();
+            }
             UpdateJumps(gameTime, keyboardState);
-            weapon.Update(gameTime, player);
+            weapon.Update(gameTime, player, sndItem);
             previousKey = keyboardState;
             UpdateShots(gameTime);
             for (int i = 0; i < platformsFalling.Count; i++)
@@ -120,10 +133,11 @@ namespace ManicFEUP
             if (!player.IsAlive)
             {
                 player.Lifes--;
-                if (player.Lifes == 0)
-                {
+                if (player.Lifes == 0) {
                     state = LevelStates.GameOver;
+                    sndDieLast.Play();
                 }
+                else sndDie.Play();
                 this.reset();
             }
 
@@ -178,7 +192,9 @@ namespace ManicFEUP
 
         private void DrawHUD(GameTime gameTime, SpriteBatch spriteBatch) {
             noJumps.Draw(spriteBatch, "x " + ((jumpsLeft - 1 >= 0) ? jumpsLeft - 1 : 0), Color.White);
-            energyText.Draw(spriteBatch, "Energy", Color.White);
+            
+            
+            if(speedBootsOn) speedIncreased.Draw(spriteBatch, "Speed increased", Color.White);
             if (player.Weapon) xToShoot.Draw(spriteBatch, "Press \"X\" to shoot", Color.White);
 
             jumpBoots.DrawHUDCopy(gameTime, spriteBatch, 10, 400);
@@ -187,6 +203,7 @@ namespace ManicFEUP
             if(player.Weapon) weapon.DrawHUDCopy(gameTime, spriteBatch, 10, 440);
 
             energyMeter.Draw(gameTime, spriteBatch);
+            energyText.Draw(spriteBatch, "Energy", Color.White);
 
             if (state != LevelStates.Playing)
             {
@@ -267,7 +284,8 @@ namespace ManicFEUP
                 case 'K': return LoadKeyTile(x, y); // Key
                 case 'B': return LoadSpeedBootsTile(x, y); //Speed Boots
                 case 'J': return LoadJumpBootsTile(x, y); //Jump Boots
-                case 'E': return LoadEnemyTile(x, y, "sprEnemy");   // Various enemies
+                case 'E': return LoadEnemyTile(x, y, "sprEnemy", 3);   // Various enemies
+                case 'M': return LoadEnemyTile(x, y, "sprBoss", 5);
                 case 'W': return LoadWeaponTile(x, y);  //Weapon
                 // Unknown tile type character
                 default: throw new NotSupportedException(String.Format("Unsupported tile type character '{0}' at position {1}, {2}.", tileType, x, y));
@@ -279,7 +297,7 @@ namespace ManicFEUP
             if (player != null)
                 throw new NotSupportedException("A level may only have one starting point.");
             start = new Vector2( x*tileSet.Width + tileSet.Width/2, y*tileSet.Height + tileSet.Height);
-            player = new Player(this, start );
+            player = new Player(this, start, Content);
             return new Tile(TileCollision.Passable);
         }
 
@@ -293,10 +311,10 @@ namespace ManicFEUP
             return new Tile(TileCollision.Passable);
         }
 
-        private Tile LoadEnemyTile(int x, int y, string assetName)
+        private Tile LoadEnemyTile(int x, int y, string assetName, int life)
         {
             Vector2 position = RectUtils.GetBottomCenter(GetBounds(x, y));
-            enemies.Add(new Enemy(this, position, assetName));
+            enemies.Add(new Enemy(this, position, assetName, life));
             return new Tile(TileCollision.Passable);
         }
 
@@ -348,6 +366,7 @@ namespace ManicFEUP
                 //key.Update(gameTime);
                 if (key.Active && key.Bounding.Intersects(player.Bounding))
                 {
+                    sndItem.Play();
                     player.keyNumber++;
                     keys[i].Active = false;
                     //OnGemCollected(gem, Player);
@@ -391,8 +410,10 @@ namespace ManicFEUP
         }
 
         private void UpdateJumps(GameTime gameTime, KeyboardState keyboardState) {
-            if (jumpBoots.Update(gameTime, player))
+            if (jumpBoots.Update(gameTime, player)) {
+                sndItem.Play();
                 jumpsLeft = 11;
+            }
 
             if (jumpsLeft > 0 && keyboardState != previousKey && countJump && keyboardState.IsKeyDown(Keys.Space)) {
                 countJump = false;
@@ -442,6 +463,7 @@ namespace ManicFEUP
             jumpsLeft = 0;
             speedBoots.Reset(player);
             energyMeter.Reset();
+            speedBootsOn = false;
 
             foreach (Enemy enemy in enemies)
                 enemy.Reset();

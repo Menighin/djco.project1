@@ -25,7 +25,7 @@ namespace ManicFEUP
         private float shotTime = 0.1f;
         private FaceDirection direction;
         private int life;
-        private int lifeMax = 3;
+        private int lifeMax;
         private bool isAlive;
         private bool beenHit;
 
@@ -43,10 +43,11 @@ namespace ManicFEUP
         }
 
 
-        public Enemy(SceneLevel level, Vector2 Pos, string assetName) 
+        public Enemy(SceneLevel level, Vector2 Pos, string assetName, int lifeParam) 
         {
             this.level = level;
             this.Position = Pos;
+            this.lifeMax = lifeParam;
             this.life = lifeMax;
             isAlive = true;
             beenHit = false;

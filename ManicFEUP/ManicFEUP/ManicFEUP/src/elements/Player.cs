@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Audio;
 
 namespace ManicFEUP
 {
@@ -30,6 +31,10 @@ namespace ManicFEUP
         private const float JumpControlPower = 0.14f;               //0.14f
         private const int MaxShots = 3;
 
+        KeyboardState previousButton;
+
+        ContentManager Content;
+
         private Vector2 Position;
         private Vector2 startPosition;
         private Vector2 velocity;
@@ -38,6 +43,7 @@ namespace ManicFEUP
         private bool isAlive;
         private int lifes = 1;
         private bool isOnGround;
+        private bool avoidJumpSoundRepeat;
         private float movement;
         private bool isJumping;
         private bool wasJumping;
@@ -63,7 +69,13 @@ namespace ManicFEUP
         }
         public int keyNumber;
 
-        public Player(SceneLevel level, Vector2 pos) 
+        // Sons
+        SoundEffect sndShot;
+        SoundEffect sndJump;
+
+
+
+        public Player(SceneLevel level, Vector2 pos, ContentManager Content) 
         {
             this.level = level;
             this.Position = pos;
@@ -71,6 +83,7 @@ namespace ManicFEUP
             this.canShoot = false;
             isAlive = true;
             this.lifes = 3;
+            this.Content = Content;
 
             Reset(Position);
             LoadContent();
@@ -90,6 +103,9 @@ namespace ManicFEUP
             this.sprite = new Sprite(level.Content.Load<Texture2D>("sprPlayer"), 32, 32, 6, new Vector2(16,31));
             this.sprMask = new Sprite(level.Content.Load<Texture2D>("sprPlayerMask"), 32, 32, 1, new Vector2(16, 31));
             this.HUDsprite = new Sprite(level.Content.Load<Texture2D>("sprPlayer"), 32, 32, 6, new Vector2(16, 31));
+
+            this.sndShot = Content.Load<SoundEffect>("sndShot");
+            this.sndJump = Content.Load<SoundEffect>("sndJump");
 
             localBounds = new Rectangle(10, 1, 12, 31); //Caixa de colisao
         }
@@ -143,22 +159,25 @@ namespace ManicFEUP
             }
 
             // Check if the player wants to jump.
-            isJumping = keyboardState.IsKeyDown(Keys.Space);
+            avoidJumpSoundRepeat = isOnGround;
+            isJumping = keyboardState.IsKeyDown(Keys.Space) && !previousButton.IsKeyDown(Keys.Space);
+            if (isJumping && avoidJumpSoundRepeat) { sndJump.Play(); avoidJumpSoundRepeat = false; }
 
             // Player atirando
             shootInterval -= (float)gameTime.ElapsedGameTime.TotalSeconds;
-            if (canShoot && keyboardState.IsKeyDown(Keys.X)) {
+            if (canShoot && keyboardState.IsKeyDown(Keys.X) && !previousButton.IsKeyDown(Keys.X)) {
                 if (shots.Count < MaxShots) {
                     if (shootInterval < 0 || shots.Count == 0) {
+                        sndShot.Play();
                         if (side >= 0)
-                            shots.Add(new Shot(level, new Vector2(Position.X, Position.Y - 20), side));
+                            shots.Add(new Shot(level, new Vector2(Position.X, Position.Y - 20), side, Content));
                         else
-                            shots.Add(new Shot(level, new Vector2(Position.X - 10, Position.Y - 20), side));
+                            shots.Add(new Shot(level, new Vector2(Position.X - 10, Position.Y - 20), side, Content));
                         shootInterval = 0.2f;
                     }
                 }
             }
-            
+            previousButton = keyboardState;
 
         }
 
