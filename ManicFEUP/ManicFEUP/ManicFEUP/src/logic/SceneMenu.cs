@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 
 namespace ManicFEUP
 {
@@ -15,11 +16,19 @@ namespace ManicFEUP
 
         public SceneMenu(GameServiceContainer Services) : base(Services)
         {
+
         }
 
         public override void Load() {
-            this.background = Content.Load<Texture2D>("sprBG");
+            this.background = Content.Load<Texture2D>("spr/sprMenu");
             bgPos = new Vector2(0, 0);
+
+            try
+            {
+                MediaPlayer.IsRepeating = true;
+                MediaPlayer.Play(Content.Load<Song>("snd/sndMusic"));
+            }
+            catch { }
         }
 
         public override bool Update(GameTime gameTime, KeyboardState keyboardState)

@@ -27,6 +27,7 @@ namespace ManicFEUP
 
         private Scene level;
 
+
         public GameCore()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -46,6 +47,7 @@ namespace ManicFEUP
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+
             // Load Textures
             // Load Sounds
 
@@ -94,6 +96,7 @@ namespace ManicFEUP
         protected override void Draw(GameTime gameTime) {
             GraphicsDevice.Clear(new Color (0.1f, 0.1f, 0.1f));  // Clear background to black
             spriteBatch.Begin();
+
             level.Draw(gameTime, spriteBatch);  // Draw Level
             spriteBatch.End();
 

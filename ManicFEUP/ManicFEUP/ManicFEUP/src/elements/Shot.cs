@@ -41,8 +41,8 @@ namespace ManicFEUP {
         }
 
         public void LoadContent() {
-            this.sprite = new Sprite(level.Content.Load<Texture2D>("shot"), 16, 16, 4, new Vector2(0, 0));
-            this.sndHit = Content.Load<SoundEffect>("sndHit");
+            this.sprite = new Sprite(level.Content.Load<Texture2D>("spr/shot"), 16, 16, 4, new Vector2(0, 0));
+            this.sndHit = Content.Load<SoundEffect>("snd/sndHit");
         }
 
         public bool Update(GameTime gameTime, List<Enemy> enemies) {

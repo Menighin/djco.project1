@@ -30,17 +30,17 @@
     <Reference Include="Microsoft.Xna.Framework.Content.Pipeline.VideoImporters, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=MSIL" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="sprEnemy.png">
+    <Compile Include="spr\sprEnemy.png">
       <Name>sprEnemy</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="sprPlayer.png">
+    <Compile Include="spr\sprPlayer.png">
       <Name>sprPlayer</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="tileset.png">
+    <Compile Include="spr\tileset.png">
       <Name>tileset</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
@@ -59,111 +59,125 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="sprPlayerMask.png">
+    <Compile Include="spr\sprPlayerMask.png">
       <Name>sprPlayerMask</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="sprKey.png">
+    <Compile Include="spr\sprKey.png">
       <Name>sprKey</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="shot.png">
+    <Compile Include="spr\shot.png">
       <Name>shot</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="sprPlatformFalling.png">
+    <Compile Include="spr\sprPlatformFalling.png">
       <Name>sprPlatformFalling</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="sprBG.png">
-      <Name>sprBG</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="sprDoor.png">
+    <Compile Include="spr\sprDoor.png">
       <Name>sprDoor</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="sprSpikes.png">
+    <Compile Include="spr\sprSpikes.png">
       <Name>sprSpikes</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="sprEnergyMeter.png">
+    <Compile Include="spr\sprEnergyMeter.png">
       <Name>sprEnergyMeter</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="sprObjects.png">
+    <Compile Include="spr\sprObjects.png">
       <Name>sprObjects</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="sndShot.wav">
+    <Compile Include="snd\sndShot.wav">
       <Name>sndShot</Name>
       <Importer>WavImporter</Importer>
       <Processor>SoundEffectProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="sndDie.wav">
+    <Compile Include="snd\sndDie.wav">
       <Name>sndDie</Name>
       <Importer>WavImporter</Importer>
       <Processor>SoundEffectProcessor</Processor>
     </Compile>
-    <Compile Include="sndDieLast.wav">
+    <Compile Include="snd\sndDieLast.wav">
       <Name>sndDieLast</Name>
       <Importer>WavImporter</Importer>
       <Processor>SoundEffectProcessor</Processor>
     </Compile>
-    <Compile Include="sndJump.wav">
+    <Compile Include="snd\sndJump.wav">
       <Name>sndJump</Name>
       <Importer>WavImporter</Importer>
       <Processor>SoundEffectProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="sndItem.wav">
+    <Compile Include="snd\sndItem.wav">
       <Name>sndItem</Name>
       <Importer>WavImporter</Importer>
       <Processor>SoundEffectProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="sndHit.wav">
+    <Compile Include="snd\sndHit.wav">
       <Name>sndHit</Name>
       <Importer>WavImporter</Importer>
       <Processor>SoundEffectProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="sprBoss.png">
+    <Compile Include="spr\sprBoss.png">
       <Name>sprBoss</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="spr\sprFEUP.png">
+      <Name>sprFEUP</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="spr\sprMenu.png">
+      <Name>sprMenu</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="snd\sndMusic.wma">
+      <Name>sndMusic</Name>
+      <Importer>WmaImporter</Importer>
+      <Processor>SongProcessor</Processor>
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\$(XnaFrameworkVersion)\Microsoft.Xna.GameStudio.ContentPipeline.targets" />

@@ -34,6 +34,9 @@ namespace ManicFEUP
 
         private LevelStates state;
         private Text stateFont = new Text("manicFont", 300, 440);
+
+        private Texture2D background;
+        private Vector2 bgPos;
         
         // Textos
         protected Text noJumps = new Text("manicFont", 35, 400);
@@ -72,7 +75,7 @@ namespace ManicFEUP
 
         public SceneLevel(GameServiceContainer Services, Stream fileStream) : base(Services)
         {
-            LoadTiles("tileset", fileStream);  // Load TileSet and Tiles
+            LoadTiles("spr/tileset", fileStream);  // Load TileSet and Tiles
             energyMeter = new EnergyMeter(this, new Vector2(150, 370), energy);
             backup();
             state = LevelStates.Playing;
@@ -81,15 +84,18 @@ namespace ManicFEUP
         }
 
         public override void Load() {
+
+            this.background = Content.Load<Texture2D>("spr/sprFEUP");
+            bgPos = new Vector2(0, 0);
             // Loading Fonts
             noJumps.Load(Content);
             xToShoot.Load(Content);
             speedIncreased.Load(Content);
             energyText.Load(Content);
             stateFont.Load(Content);
-            sndDie = Content.Load<SoundEffect>("sndDie");
-            sndDieLast = Content.Load<SoundEffect>("sndDieLast");
-            sndItem = Content.Load<SoundEffect>("sndItem");
+            sndDie = Content.Load<SoundEffect>("snd/sndDie");
+            sndDieLast = Content.Load<SoundEffect>("snd/sndDieLast");
+            sndItem = Content.Load<SoundEffect>("snd/sndItem");
         }
 
         public override bool Update(GameTime gameTime, KeyboardState keyboardState)
@@ -146,6 +152,7 @@ namespace ManicFEUP
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
+            spriteBatch.Draw(background, bgPos, Color.White);
             DrawTiles(spriteBatch);
 
             foreach (Spike spike in spikes)
@@ -191,10 +198,10 @@ namespace ManicFEUP
         }
 
         private void DrawHUD(GameTime gameTime, SpriteBatch spriteBatch) {
-            noJumps.Draw(spriteBatch, "x " + ((jumpsLeft - 1 >= 0) ? jumpsLeft - 1 : 0), Color.White);
+            noJumps.Draw(spriteBatch, "x " + ((jumpsLeft >= 0) ? jumpsLeft : 0), Color.White);
             
             
-            if(speedBootsOn) speedIncreased.Draw(spriteBatch, "Speed increased", Color.White);
+            if(speedBootsOn) speedIncreased.Draw(spriteBatch, "Speed increased. Be Careful!", Color.White);
             if (player.Weapon) xToShoot.Draw(spriteBatch, "Press \"X\" to shoot", Color.White);
 
             jumpBoots.DrawHUDCopy(gameTime, spriteBatch, 10, 400);
@@ -282,10 +289,10 @@ namespace ManicFEUP
                 case 'P': return LoadStartTile(x, y); // Player 1 start point  
                 case 'X': return LoadExitTile(x, y);    // Door
                 case 'K': return LoadKeyTile(x, y); // Key
-                case 'B': return LoadSpeedBootsTile(x, y); //Speed Boots
+                case 'S': return LoadSpeedBootsTile(x, y); //Speed Boots
                 case 'J': return LoadJumpBootsTile(x, y); //Jump Boots
-                case 'E': return LoadEnemyTile(x, y, "sprEnemy", 3);   // Various enemies
-                case 'M': return LoadEnemyTile(x, y, "sprBoss", 5);
+                case 'E': return LoadEnemyTile(x, y, "spr/sprEnemy", 3);   // Various enemies
+                case 'M': return LoadEnemyTile(x, y, "spr/sprBoss", 5);
                 case 'W': return LoadWeaponTile(x, y);  //Weapon
                 // Unknown tile type character
                 default: throw new NotSupportedException(String.Format("Unsupported tile type character '{0}' at position {1}, {2}.", tileType, x, y));
@@ -412,7 +419,7 @@ namespace ManicFEUP
         private void UpdateJumps(GameTime gameTime, KeyboardState keyboardState) {
             if (jumpBoots.Update(gameTime, player)) {
                 sndItem.Play();
-                jumpsLeft = 11;
+                jumpsLeft = 15;
             }
 
             if (jumpsLeft > 0 && keyboardState != previousKey && countJump && keyboardState.IsKeyDown(Keys.Space)) {

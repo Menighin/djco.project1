@@ -30,11 +30,11 @@ namespace ManicFEUP {
         }
 
         public void LoadContent() {
-            sprMeter = level.Content.Load<Texture2D>("sprEnergyMeter");
-            rects[0] = level.Content.Load<Texture2D>("sprEnergyMeter");
-            rects[1] = level.Content.Load<Texture2D>("sprEnergyMeter");
-            rects[2] = level.Content.Load<Texture2D>("sprEnergyMeter");
-            rects[3] = level.Content.Load<Texture2D>("sprEnergyMeter");
+            sprMeter = level.Content.Load<Texture2D>("spr/sprEnergyMeter");
+            rects[0] = level.Content.Load<Texture2D>("spr/sprEnergyMeter");
+            rects[1] = level.Content.Load<Texture2D>("spr/sprEnergyMeter");
+            rects[2] = level.Content.Load<Texture2D>("spr/sprEnergyMeter");
+            rects[3] = level.Content.Load<Texture2D>("spr/sprEnergyMeter");
         }
 
         public void Reset()

@@ -40,7 +40,7 @@ namespace ManicFEUP {
         }
 
         public void LoadContent() {
-            this.sprite = new Sprite(level.Content.Load<Texture2D>("sprPlatformFalling"), 16, 14, 4, new Vector2(0, 0));
+            this.sprite = new Sprite(level.Content.Load<Texture2D>("spr/sprPlatformFalling"), 16, 14, 4, new Vector2(0, 0));
         }
 
         public void Reset()

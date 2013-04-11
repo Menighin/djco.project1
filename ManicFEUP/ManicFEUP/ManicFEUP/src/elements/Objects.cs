@@ -42,7 +42,7 @@ namespace ManicFEUP
 
         public void LoadContent()
         {
-            this.sprite = new Sprite(level.Content.Load<Texture2D>("sprKey"), 16, 16, 4, new Vector2(0, 0));
+            this.sprite = new Sprite(level.Content.Load<Texture2D>("spr/sprKey"), 16, 16, 4, new Vector2(0, 0));
         }
 
         public void Update(GameTime gameTime, KeyboardState keyboardState)
@@ -93,7 +93,7 @@ namespace ManicFEUP
 
         public void LoadContent()
         {
-            this.sprite = new Sprite(level.Content.Load<Texture2D>("sprDoor"), 32, 32, 2, new Vector2(0, 0));
+            this.sprite = new Sprite(level.Content.Load<Texture2D>("spr/sprDoor"), 32, 32, 2, new Vector2(0, 0));
         }
 
         public void Update(GameTime gameTime, KeyboardState keyboardState)
@@ -133,7 +133,7 @@ namespace ManicFEUP
 
         public void LoadContent()
         {
-            this.sprite = new Sprite(level.Content.Load<Texture2D>("sprSpikes"), 16, 16, 4, new Vector2(0, 0));
+            this.sprite = new Sprite(level.Content.Load<Texture2D>("spr/sprSpikes"), 16, 16, 4, new Vector2(0, 0));
             this.sprite.SetAnimLoop(spikeType, spikeType, 0.0f);
         }
 
@@ -170,14 +170,14 @@ namespace ManicFEUP
         }
 
         public void LoadContent() {
-            this.sprite = new Sprite(level.Content.Load<Texture2D>("sprObjects"), 16, 16, 3, new Vector2(0, 0));
+            this.sprite = new Sprite(level.Content.Load<Texture2D>("spr/sprObjects"), 16, 16, 3, new Vector2(0, 0));
         }
 
         public bool Update(GameTime gameTime, Player player) {
             if (this.visible && this.Bounding.Intersects(player.Bounding)) {
                 visible = false;
-                player.Speed *= 1.5f;
-                player.Acceleration *= 1.5f;
+                player.Speed *= 1.35f;
+                player.Acceleration *= 1.35f;
                 return true;
             }
             return false;
@@ -187,8 +187,8 @@ namespace ManicFEUP
         {
             if (!visible)
             {
-                player.Speed /= 1.5f;
-                player.Acceleration /= 1.5f;
+                player.Speed /= 1.35f;
+                player.Acceleration /= 1.35f;
                 visible = true;
             }
         }
@@ -227,13 +227,13 @@ namespace ManicFEUP
 
 
         public void LoadContent() {
-            this.sprite = new Sprite(level.Content.Load<Texture2D>("sprObjects"), 16, 16, 3, new Vector2(0, 0));
+            this.sprite = new Sprite(level.Content.Load<Texture2D>("spr/sprObjects"), 16, 16, 3, new Vector2(0, 0));
         }
 
         public Boolean Update(GameTime gameTime, Player player) {
             if (visible && Bounding.Intersects(player.Bounding)) {
                 visible = false;
-                player.Jump *= 1.5f;
+                player.Jump *= 1.8f;
                 return true;
             }
             return false;
@@ -242,7 +242,7 @@ namespace ManicFEUP
         public void reset(Player player) {
             if (!visible)
             {
-                player.Jump /= 1.5f;
+                player.Jump /= 1.8f;
                 visible = true;
             }
         }
@@ -281,7 +281,7 @@ namespace ManicFEUP
 
 
         public void LoadContent() {
-            this.sprite = new Sprite(level.Content.Load<Texture2D>("sprObjects"), 16, 16, 3, new Vector2(0, 0));
+            this.sprite = new Sprite(level.Content.Load<Texture2D>("spr/sprObjects"), 16, 16, 3, new Vector2(0, 0));
         }
 
         public void Update(GameTime gameTime, Player player, SoundEffect sndItem) {

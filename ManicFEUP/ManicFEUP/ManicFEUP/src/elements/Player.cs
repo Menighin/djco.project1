@@ -24,7 +24,7 @@ namespace ManicFEUP
         private const float GroundDragFactor = 0.48f;               //0.48f;
         private const float AirDragFactor = 0.49f;                  //0.58f;
         // Constants for controlling vertical movement
-        private float MaxJumpTime = 0.35f;                    // 0.35f;
+        private float MaxJumpTime = 0.30f;                    // 0.35f;
         private const float JumpLaunchVelocity = -1400.0f;        //-3500.0f;
         private const float GravityAcceleration = 2000.0f;          //3400.0f;
         private const float MaxFallSpeed = 500.0f;                  //550.0f;
@@ -100,12 +100,12 @@ namespace ManicFEUP
 
         public void LoadContent()
         {
-            this.sprite = new Sprite(level.Content.Load<Texture2D>("sprPlayer"), 32, 32, 6, new Vector2(16,31));
-            this.sprMask = new Sprite(level.Content.Load<Texture2D>("sprPlayerMask"), 32, 32, 1, new Vector2(16, 31));
-            this.HUDsprite = new Sprite(level.Content.Load<Texture2D>("sprPlayer"), 32, 32, 6, new Vector2(16, 31));
+            this.sprite = new Sprite(level.Content.Load<Texture2D>("spr/sprPlayer"), 32, 32, 6, new Vector2(16,31));
+            this.sprMask = new Sprite(level.Content.Load<Texture2D>("spr/sprPlayerMask"), 32, 32, 1, new Vector2(16, 31));
+            this.HUDsprite = new Sprite(level.Content.Load<Texture2D>("spr/sprPlayer"), 32, 32, 6, new Vector2(16, 31));
 
-            this.sndShot = Content.Load<SoundEffect>("sndShot");
-            this.sndJump = Content.Load<SoundEffect>("sndJump");
+            this.sndShot = Content.Load<SoundEffect>("snd/sndShot");
+            this.sndJump = Content.Load<SoundEffect>("snd/sndJump");
 
             localBounds = new Rectangle(10, 1, 12, 31); //Caixa de colisao
         }
